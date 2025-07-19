@@ -25,7 +25,7 @@ function App() {
   const [totalQuestionsActuel, setTotalQuestionsActuel] = useState<number>(0);
   const [tempsJeuActuel, setTempsJeuActuel] = useState<number>(0);
 
-  // Gestion de la connexion
+  // Ges coonn
   const gererConnexion = (identifiant: string) => {
     setUtilisateur({
       identifiant,
@@ -34,7 +34,7 @@ function App() {
     setEtatJeu('selectionMode');
   };
 
-  // Gestion de la déconnexion
+  //dec 
   const gererDeconnexion = () => {
     setUtilisateur({
       identifiant: '',

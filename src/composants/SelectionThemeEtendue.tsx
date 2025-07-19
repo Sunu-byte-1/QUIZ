@@ -188,7 +188,7 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
           <h3 className="text-lg font-bold mb-3">Informations sur le quiz</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>• Chaque question a 4 réponses possibles</div>
-            <div>• Temps limité : 30 secondes par question</div>
+            <div>• Temps limité : 2 minutes (120 secondes) par question</div>
             <div>• Feedback immédiat après chaque réponse</div>
             <div>• Score final avec statistiques détaillées</div>
           </div>
