@@ -323,7 +323,6 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     setTimeout(() => {
       passerRubriqueSuivante();
     }, 3000);
-    }
   };
 
   const obtenirCouleurReponse = (index: number) => {
