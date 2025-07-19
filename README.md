@@ -5,9 +5,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.x-blue.svg)](https://www.typescriptlang.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC.svg)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-4.x-646CFF.svg)](https://vitejs.dev/)
-[![Deployment](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://quizz.vercel.app)
+[![Deployment](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://science-quizapp.vercel.app)
+
 
 ---
+
+**Accéder à l’application** : [https://science-quizapp.vercel.app](https://science-quizapp.vercel.app)
 
 ## Description générale
 
