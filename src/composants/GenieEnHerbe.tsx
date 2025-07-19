@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star } from 'lucide-react';
+import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe } from 'lucide-react';
 import { QuestionGenieEnHerbe, ScoreGenieEnHerbe } from '../types';
-import { obtenirQuestionsGenieEnHerbe, rubriquesGenieEnHerbe } from '../donnees/questionsEtendues';
+import { obtenirQuestionsGenieEnHerbe, rubriquesGenieEnHerbe, themesDisponibles } from '../donnees/questionsEtendues';
 
 // Fonction pour mélanger les réponses
 const melangerReponses = (question: QuestionGenieEnHerbe) => {
@@ -45,18 +45,26 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     identification: 0,
     total: 0
   });
-  const [phaseJeu, setPhaseJeu] = useState<'presentation' | 'jeu' | 'transition'>('presentation');
+  const [phaseJeu, setPhaseJeu] = useState<'presentation' | 'jeu' | 'selectionTheme' | 'selectionLettre' | 'identification'>('presentation');
+  const [themeEclairSelectionne, setThemeEclairSelectionne] = useState<string>('');
+  const [lettreSelectionnee, setLettreSelectionnee] = useState<string>('');
+  const [indiceActuel, setIndiceActuel] = useState<number>(0);
+  const [questionCantonnade, setQuestionCantonnade] = useState<number>(0); // 0 = question principale, 1-4 = questions bonus
+  const [cantonnadeReussie, setCantonnadeReussie] = useState<boolean>(false);
 
   const rubriques = [
-    { nom: 'canonnade', titre: 'Canonnade', description: '10 questions rapides - 5 secondes chacune', couleur: 'bg-red-500', questionsParRubrique: 10 },
-    { nom: 'eclair', titre: 'Éclair', description: '10 questions moyennes - 10 secondes chacune', couleur: 'bg-yellow-500', questionsParRubrique: 10 },
-    { nom: 'relais', titre: 'Relais', description: '10 questions difficiles - 15 secondes chacune', couleur: 'bg-blue-500', questionsParRubrique: 10 },
-    { nom: 'identification', titre: 'Identification', description: '10 questions expert - 20 secondes chacune', couleur: 'bg-purple-500', questionsParRubrique: 10 }
+    { nom: 'canonnade', titre: 'Canonnade', description: '1 question à 5 points + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5 },
+    { nom: 'eclair', titre: 'Éclair', description: '5 questions thématiques + 5 questions par lettre', couleur: 'bg-yellow-500', questionsParRubrique: 10 },
+    { nom: 'relais', titre: 'Relais', description: 'Questions en chaîne - arrêt à la première erreur', couleur: 'bg-blue-500', questionsParRubrique: 10 },
+    { nom: 'identification', titre: 'Identification', description: 'Devinez avec des indices (40-30-20-10 points)', couleur: 'bg-purple-500', questionsParRubrique: 1 }
   ];
+
+  const themesEclair = ['Mathématiques', 'Informatique', 'Physique', 'Astronomie'];
+  const lettresAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   // Charger les questions pour la rubrique actuelle
   useEffect(() => {
-    if (phaseJeu === 'jeu') {
+    if (phaseJeu === 'jeu' && rubriques[rubriqueActuelle].nom !== 'eclair') {
       const rubrique = rubriques[rubriqueActuelle];
       const nouvellesQuestions = obtenirQuestionsGenieEnHerbe(rubrique.nom, rubrique.questionsParRubrique);
       setQuestions(nouvellesQuestions);
@@ -64,6 +72,9 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
       setReponseSelectionnee(null);
       setARepondu(false);
       setAfficherReponse(false);
+      setQuestionCantonnade(0);
+      setCantonnadeReussie(false);
+      setIndiceActuel(0);
     }
   }, [rubriqueActuelle, phaseJeu]);
 
@@ -103,7 +114,45 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   }, [questionActuelle, questionsMelangees, phaseJeu]);
 
   const demarrerRubrique = () => {
+    const rubrique = rubriques[rubriqueActuelle];
+    if (rubrique.nom === 'eclair') {
+      setPhaseJeu('selectionTheme');
+    } else {
+      setPhaseJeu('jeu');
+    }
+  };
+
+  const demarrerEclairTheme = (theme: string) => {
+    setThemeEclairSelectionne(theme);
+    const nouvellesQuestions = obtenirQuestionsGenieEnHerbe('eclair', 5, theme);
+    setQuestions(nouvellesQuestions);
+    setQuestionActuelle(0);
+    setReponseSelectionnee(null);
+    setARepondu(false);
+    setAfficherReponse(false);
     setPhaseJeu('jeu');
+  };
+
+  const demarrerEclairLettre = (lettre: string) => {
+    setLettreSelectionnee(lettre);
+    const nouvellesQuestions = obtenirQuestionsGenieEnHerbe('eclair', 5, undefined, lettre);
+    setQuestions(nouvellesQuestions);
+    setQuestionActuelle(0);
+    setReponseSelectionnee(null);
+    setARepondu(false);
+    setAfficherReponse(false);
+    setPhaseJeu('jeu');
+  };
+
+  const demarrerIdentification = () => {
+    const nouvellesQuestions = obtenirQuestionsGenieEnHerbe('identification', 1);
+    setQuestions(nouvellesQuestions);
+    setQuestionActuelle(0);
+    setReponseSelectionnee(null);
+    setARepondu(false);
+    setAfficherReponse(false);
+    setIndiceActuel(0);
+    setPhaseJeu('identification');
   };
 
   const gererSelectionReponse = (index: number) => {
@@ -119,12 +168,42 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubriqueNom = rubriques[rubriqueActuelle].nom as keyof ScoreGenieEnHerbe;
     
     // Vérifier si la réponse est correcte
-    if (index === question.bonneReponse) {
+    const reponseCorrecte = index === question.bonneReponse;
+    
+    if (reponseCorrecte) {
+      let points = question.points;
+      
+      // Logique spéciale pour l'identification
+      if (rubriqueNom === 'identification') {
+        const pointsIdentification = [40, 30, 20, 10];
+        points = pointsIdentification[indiceActuel] || 10;
+      }
+      
       setScore(prevScore => ({
         ...prevScore,
-        [rubriqueNom]: prevScore[rubriqueNom] + question.points,
-        total: prevScore.total + question.points
+        [rubriqueNom]: prevScore[rubriqueNom] + points,
+        total: prevScore.total + points
       }));
+      
+      // Marquer la canonnade comme réussie si c'est la première question
+      if (rubriqueNom === 'canonnade' && questionCantonnade === 0) {
+        setCantonnadeReussie(true);
+      }
+    } else {
+      // Logique d'arrêt pour certaines rubriques
+      if (rubriqueNom === 'canonnade' && questionCantonnade === 0) {
+        // Canonnade échouée, passer à la rubrique suivante
+        setTimeout(() => {
+          passerRubriqueSuivante();
+        }, 2000);
+        return;
+      } else if (rubriqueNom === 'relais') {
+        // Relais échoué, passer à la rubrique suivante
+        setTimeout(() => {
+          passerRubriqueSuivante();
+        }, 2000);
+        return;
+      }
     }
 
     // Passer à la question suivante après 2 secondes
@@ -139,20 +218,111 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   };
 
   const questionSuivante = () => {
+    const rubrique = rubriques[rubriqueActuelle];
+    
+    // Logique spéciale pour la canonnade
+    if (rubrique.nom === 'canonnade') {
+      if (questionCantonnade === 0 && cantonnadeReussie) {
+        // Passer aux questions bonus
+        setQuestionCantonnade(1);
+        setQuestionActuelle(questionActuelle + 1);
+        setReponseSelectionnee(null);
+        setARepondu(false);
+        setAfficherReponse(false);
+        return;
+      } else if (questionCantonnade > 0 && questionCantonnade < 4 && cantonnadeReussie) {
+        // Continuer les questions bonus
+        setQuestionCantonnade(questionCantonnade + 1);
+        setQuestionActuelle(questionActuelle + 1);
+        setReponseSelectionnee(null);
+        setARepondu(false);
+        setAfficherReponse(false);
+        return;
+      } else {
+        // Canonnade terminée
+        passerRubriqueSuivante();
+        return;
+      }
+    }
+    
+    // Logique spéciale pour l'éclair
+    if (rubrique.nom === 'eclair') {
+      if (questionActuelle < 4) {
+        // Continuer les questions thématiques
+        setQuestionActuelle(questionActuelle + 1);
+        setReponseSelectionnee(null);
+        setARepondu(false);
+        setAfficherReponse(false);
+        return;
+      } else if (questionActuelle === 4) {
+        // Passer à la sélection de lettre
+        setPhaseJeu('selectionLettre');
+        return;
+      } else if (questionActuelle < questionsMelangees.length - 1) {
+        // Continuer les questions par lettre
+        setQuestionActuelle(questionActuelle + 1);
+        setReponseSelectionnee(null);
+        setARepondu(false);
+        setAfficherReponse(false);
+        return;
+      } else {
+        // Éclair terminé
+        passerRubriqueSuivante();
+        return;
+      }
+    }
+    
+    // Logique normale pour les autres rubriques
     if (questionActuelle < questionsMelangees.length - 1) {
       setQuestionActuelle(questionActuelle + 1);
       setReponseSelectionnee(null);
       setARepondu(false);
       setAfficherReponse(false);
     } else {
-      // Rubrique terminée
-      if (rubriqueActuelle < rubriques.length - 1) {
-        setRubriqueActuelle(rubriqueActuelle + 1);
-        setPhaseJeu('presentation');
-      } else {
-        // Jeu terminé
-        surFinJeu(score);
-      }
+      passerRubriqueSuivante();
+    }
+  };
+
+  const passerRubriqueSuivante = () => {
+    if (rubriqueActuelle < rubriques.length - 1) {
+      setRubriqueActuelle(rubriqueActuelle + 1);
+      setPhaseJeu('presentation');
+    } else {
+      // Jeu terminé
+      surFinJeu(score);
+    }
+  };
+
+  const gererIndiceIdentification = () => {
+    if (indiceActuel < 3) {
+      setIndiceActuel(indiceActuel + 1);
+    }
+  };
+
+  const gererReponseIdentification = (index: number) => {
+    if (aRepondu) return;
+    setReponseSelectionnee(index);
+    setARepondu(true);
+    setAfficherReponse(true);
+    setTimerActif(false);
+    
+    const question = questionsMelangees[questionActuelle];
+    
+    if (index === question.bonneReponse) {
+      const pointsIdentification = [40, 30, 20, 10];
+      const points = pointsIdentification[indiceActuel];
+      
+      setScore(prevScore => ({
+        ...prevScore,
+        identification: prevScore.identification + points,
+        total: prevScore.total + points
+      }));
+    }
+
+    // Terminer l'identification après 3 secondes
+    setTimeout(() => {
+      passerRubriqueSuivante();
+    }, 3000);
     }
   };
 
@@ -183,6 +353,166 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     return null;
   };
 
+  // Écran de sélection de thème pour l'éclair
+  if (phaseJeu === 'selectionTheme') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 p-4 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
+          <div className="bg-yellow-500 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Zap className="w-12 h-12" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Éclair - Sélection du Thème</h1>
+          <p className="text-xl text-gray-600 mb-8">Choisissez un thème pour vos 5 premières questions</p>
+          
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            {themesEclair.map((theme) => (
+              <button
+                key={theme}
+                onClick={() => demarrerEclairTheme(theme)}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white p-6 rounded-xl font-bold text-lg transition-all transform hover:scale-105"
+              >
+                {theme === 'Mathématiques' && <Calculator className="w-8 h-8 mx-auto mb-2" />}
+                {theme === 'Informatique' && <Computer className="w-8 h-8 mx-auto mb-2" />}
+                {theme === 'Physique' && <Atom className="w-8 h-8 mx-auto mb-2" />}
+                {theme === 'Astronomie' && <Star className="w-8 h-8 mx-auto mb-2" />}
+                {theme}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Écran de sélection de lettre pour l'éclair
+  if (phaseJeu === 'selectionLettre') {
+    const lettreAleatoire = lettresAlphabet[Math.floor(Math.random() * lettresAlphabet.length)];
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 p-4 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
+          <div className="bg-yellow-500 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl font-bold">{lettreAleatoire}</span>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Éclair - Questions par Lettre</h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Vos 5 prochaines questions auront des réponses commençant par la lettre <strong>{lettreAleatoire}</strong>
+          </p>
+          
+          <button
+            onClick={() => demarrerEclairLettre(lettreAleatoire)}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center space-x-3 mx-auto"
+          >
+            <Play className="w-6 h-6" />
+            <span>Commencer les questions "{lettreAleatoire}"</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Écran d'identification
+  if (phaseJeu === 'identification') {
+    if (questionsMelangees.length === 0) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-xl text-gray-600">Chargement de l'identification...</p>
+          </div>
+        </div>
+      );
+    }
+
+    const question = questionsMelangees[questionActuelle];
+    const pointsRestants = [40, 30, 20, 10][indiceActuel];
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-purple-500 text-white p-3 rounded-xl">
+                  <Target className="w-6 h-6" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">Identification</h1>
+                  <p className="text-gray-600">Indice {indiceActuel + 1}/4 - {pointsRestants} points</p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{score.total}</div>
+                <div className="text-gray-500 text-sm">points</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+              Qu'est-ce que c'est ?
+            </h2>
+            
+            {question.indices && (
+              <div className="bg-purple-50 rounded-xl p-6 mb-6">
+                <h3 className="font-semibold text-purple-800 mb-4">Indices révélés :</h3>
+                {question.indices.slice(0, indiceActuel + 1).map((indice, index) => (
+                  <div key={index} className="mb-2 p-3 bg-white rounded-lg">
+                    <span className="font-medium text-purple-600">Indice {index + 1}:</span> {indice}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="space-y-4 mb-6">
+              {question.reponses.map((reponse, index) => (
+                <button
+                  key={index}
+                  onClick={() => gererReponseIdentification(index)}
+                  disabled={aRepondu}
+                  className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
+                    aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 hover:border-purple-300'
+                  }`}
+                >
+                  <span className="text-lg">{reponse}</span>
+                  {obtenirIconeReponse(index)}
+                </button>
+              ))}
+            </div>
+
+            {!aRepondu && indiceActuel < 3 && (
+              <div className="text-center">
+                <button
+                  onClick={gererIndiceIdentification}
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+                >
+                  Révéler l'indice suivant ({[30, 20, 10][indiceActuel]} points)
+                </button>
+              </div>
+            )}
+
+            {afficherReponse && (
+              <div className="mt-6 text-center">
+                {reponseSelectionnee === question.bonneReponse ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p className="text-green-700 font-semibold">
+                      Excellente réponse ! +{[40, 30, 20, 10][indiceActuel]} points
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-700 font-semibold">
+                      Réponse incorrecte. La bonne réponse était : {question.reponses[question.bonneReponse]}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
   // Écran de présentation de rubrique
   if (phaseJeu === 'presentation') {
     const rubrique = rubriques[rubriqueActuelle];
@@ -261,6 +591,22 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const question = questionsMelangees[questionActuelle];
   const rubrique = rubriques[rubriqueActuelle];
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
+  
+  // Titre spécial pour les phases de l'éclair
+  let titrePhase = rubrique.titre;
+  if (rubrique.nom === 'eclair') {
+    if (questionActuelle < 5) {
+      titrePhase = `Éclair - ${themeEclairSelectionne}`;
+    } else {
+      titrePhase = `Éclair - Lettre "${lettreSelectionnee}"`;
+    }
+  } else if (rubrique.nom === 'canonnade') {
+    if (questionCantonnade === 0) {
+      titrePhase = 'Canonnade - Question Principale';
+    } else {
+      titrePhase = `Canonnade - Bonus ${questionCantonnade}/4`;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
@@ -273,7 +619,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
                 <Zap className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">{rubrique.titre}</h1>
+                <h1 className="text-2xl font-bold text-gray-800">{titrePhase}</h1>
                 <p className="text-gray-600">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
               </div>
             </div>
