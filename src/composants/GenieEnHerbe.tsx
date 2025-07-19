@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe } from 'lucide-react';
+import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe, Computer } from 'lucide-react';
 import { QuestionGenieEnHerbe, ScoreGenieEnHerbe } from '../types';
 import { obtenirQuestionsGenieEnHerbe, rubriquesGenieEnHerbe, themesDisponibles } from '../donnees/questionsEtendues';
 
