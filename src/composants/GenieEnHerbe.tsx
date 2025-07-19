@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe, Computer } from 'lucide-react';
+import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe, Computer, Shuffle } from 'lucide-react';
 import { QuestionGenieEnHerbe, ScoreGenieEnHerbe } from '../types';
 import { obtenirQuestionsGenieEnHerbe, rubriquesGenieEnHerbe, themesDisponibles } from '../donnees/questionsEtendues';
 
@@ -45,28 +45,34 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     identification: 0,
     total: 0
   });
-  const [phaseJeu, setPhaseJeu] = useState<'presentation' | 'jeu' | 'selectionTheme' | 'selectionLettre' | 'identification'>('presentation');
-  const [themeEclairSelectionne, setThemeEclairSelectionne] = useState<string>('');
-  const [lettreSelectionnee, setLettreSelectionnee] = useState<string>('');
+  const [phaseJeu, setPhaseJeu] = useState<'presentation' | 'jeu' | 'selectionThemeRelais'>('presentation');
+  const [themeRelaisSelectionne, setThemeRelaisSelectionne] = useState<string>('');
   const [indiceActuel, setIndiceActuel] = useState<number>(0);
   const [questionCantonnade, setQuestionCantonnade] = useState<number>(0); // 0 = question principale, 1-4 = questions bonus
   const [cantonnadeReussie, setCantonnadeReussie] = useState<boolean>(false);
+  const [relaisActif, setRelaisActif] = useState<boolean>(true);
 
   const rubriques = [
-    { nom: 'canonnade', titre: 'Canonnade', description: '1 question à 5 points + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5 },
-    { nom: 'eclair', titre: 'Éclair', description: '5 questions thématiques + 5 questions par lettre', couleur: 'bg-yellow-500', questionsParRubrique: 10 },
-    { nom: 'relais', titre: 'Relais', description: 'Questions en chaîne - arrêt à la première erreur', couleur: 'bg-blue-500', questionsParRubrique: 10 },
+    { nom: 'canonnade', titre: 'Canonnade', description: '1 question initiale + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5 },
+    { nom: 'eclair', titre: 'Éclair', description: '10 questions rapides aléatoires', couleur: 'bg-yellow-500', questionsParRubrique: 10 },
+    { nom: 'relais', titre: 'Relais', description: 'Questions en séquence - arrêt à la première erreur', couleur: 'bg-blue-500', questionsParRubrique: 10 },
     { nom: 'identification', titre: 'Identification', description: 'Devinez avec des indices (40-30-20-10 points)', couleur: 'bg-purple-500', questionsParRubrique: 1 }
   ];
 
-  const themesEclair = ['Mathématiques', 'Informatique', 'Physique', 'Astronomie'];
-  const lettresAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const themesDisponiblesRelais = ['Mathématiques', 'Informatique', 'Physique', 'Astronomie', 'Histoire', 'Géographie', 'Biologie', 'Chimie'];
 
   // Charger les questions pour la rubrique actuelle
   useEffect(() => {
-    if (phaseJeu === 'jeu' && rubriques[rubriqueActuelle].nom !== 'eclair') {
+    if (phaseJeu === 'jeu') {
       const rubrique = rubriques[rubriqueActuelle];
-      const nouvellesQuestions = obtenirQuestionsGenieEnHerbe(rubrique.nom, rubrique.questionsParRubrique);
+      let nouvellesQuestions: QuestionGenieEnHerbe[] = [];
+      
+      if (rubrique.nom === 'relais' && themeRelaisSelectionne) {
+        nouvellesQuestions = obtenirQuestionsGenieEnHerbe(rubrique.nom, rubrique.questionsParRubrique, themeRelaisSelectionne);
+      } else {
+        nouvellesQuestions = obtenirQuestionsGenieEnHerbe(rubrique.nom, rubrique.questionsParRubrique);
+      }
+      
       setQuestions(nouvellesQuestions);
       setQuestionActuelle(0);
       setReponseSelectionnee(null);
@@ -74,9 +80,10 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
       setAfficherReponse(false);
       setQuestionCantonnade(0);
       setCantonnadeReussie(false);
+      setRelaisActif(true);
       setIndiceActuel(0);
     }
-  }, [rubriqueActuelle, phaseJeu]);
+  }, [rubriqueActuelle, phaseJeu, themeRelaisSelectionne]);
 
   // Mélanger les réponses quand les questions changent
   useEffect(() => {
@@ -115,32 +122,20 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
 
   const demarrerRubrique = () => {
     const rubrique = rubriques[rubriqueActuelle];
-    if (rubrique.nom === 'eclair') {
-      setPhaseJeu('selectionTheme');
+    if (rubrique.nom === 'relais') {
+      setPhaseJeu('selectionThemeRelais');
     } else {
       setPhaseJeu('jeu');
     }
   };
 
-  const demarrerEclairTheme = (theme: string) => {
-    setThemeEclairSelectionne(theme);
-    const nouvellesQuestions = obtenirQuestionsGenieEnHerbe('eclair', 5, theme);
-    setQuestions(nouvellesQuestions);
-    setQuestionActuelle(0);
-    setReponseSelectionnee(null);
-    setARepondu(false);
-    setAfficherReponse(false);
+  const demarrerRelaisAvecTheme = (theme: string) => {
+    setThemeRelaisSelectionne(theme);
     setPhaseJeu('jeu');
   };
 
-  const demarrerEclairLettre = (lettre: string) => {
-    setLettreSelectionnee(lettre);
-    const nouvellesQuestions = obtenirQuestionsGenieEnHerbe('eclair', 5, undefined, lettre);
-    setQuestions(nouvellesQuestions);
-    setQuestionActuelle(0);
-    setReponseSelectionnee(null);
-    setARepondu(false);
-    setAfficherReponse(false);
+  const demarrerRelaisSansTheme = () => {
+    setThemeRelaisSelectionne('');
     setPhaseJeu('jeu');
   };
 
@@ -152,7 +147,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     setARepondu(false);
     setAfficherReponse(false);
     setIndiceActuel(0);
-    setPhaseJeu('identification');
+    setPhaseJeu('jeu');
   };
 
   const gererSelectionReponse = (index: number) => {
@@ -198,7 +193,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
         }, 2000);
         return;
       } else if (rubriqueNom === 'relais') {
-        // Relais échoué, passer à la rubrique suivante
+        // Relais échoué, arrêter le relais
+        setRelaisActif(false);
         setTimeout(() => {
           passerRubriqueSuivante();
         }, 2000);
@@ -240,33 +236,6 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
         return;
       } else {
         // Canonnade terminée
-        passerRubriqueSuivante();
-        return;
-      }
-    }
-    
-    // Logique spéciale pour l'éclair
-    if (rubrique.nom === 'eclair') {
-      if (questionActuelle < 4) {
-        // Continuer les questions thématiques
-        setQuestionActuelle(questionActuelle + 1);
-        setReponseSelectionnee(null);
-        setARepondu(false);
-        setAfficherReponse(false);
-        return;
-      } else if (questionActuelle === 4) {
-        // Passer à la sélection de lettre
-        setPhaseJeu('selectionLettre');
-        return;
-      } else if (questionActuelle < questionsMelangees.length - 1) {
-        // Continuer les questions par lettre
-        setQuestionActuelle(questionActuelle + 1);
-        setReponseSelectionnee(null);
-        setARepondu(false);
-        setAfficherReponse(false);
-        return;
-      } else {
-        // Éclair terminé
         passerRubriqueSuivante();
         return;
       }
@@ -352,66 +321,43 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     return null;
   };
 
-  // Écran de sélection de thème pour l'éclair
-  if (phaseJeu === 'selectionTheme') {
+  // Écran de sélection de thème pour le relais
+  if (phaseJeu === 'selectionThemeRelais') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-4 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
-          <div className="bg-yellow-500 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Zap className="w-12 h-12" />
+          <div className="bg-blue-500 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Target className="w-12 h-12" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Éclair - Sélection du Thème</h1>
-          <p className="text-xl text-gray-600 mb-8">Choisissez un thème pour vos 5 premières questions</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Relais - Sélection du Thème</h1>
+          <p className="text-xl text-gray-600 mb-8">Choisissez un thème ou jouez avec des questions aléatoires</p>
           
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {themesEclair.map((theme) => (
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {themesDisponiblesRelais.map((theme) => (
               <button
                 key={theme}
-                onClick={() => demarrerEclairTheme(theme)}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white p-6 rounded-xl font-bold text-lg transition-all transform hover:scale-105"
+                onClick={() => demarrerRelaisAvecTheme(theme)}
+                className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-xl font-semibold transition-all transform hover:scale-105"
               >
-                {theme === 'Mathématiques' && <Calculator className="w-8 h-8 mx-auto mb-2" />}
-                {theme === 'Informatique' && <Computer className="w-8 h-8 mx-auto mb-2" />}
-                {theme === 'Physique' && <Atom className="w-8 h-8 mx-auto mb-2" />}
-                {theme === 'Astronomie' && <Star className="w-8 h-8 mx-auto mb-2" />}
                 {theme}
               </button>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Écran de sélection de lettre pour l'éclair
-  if (phaseJeu === 'selectionLettre') {
-    const lettreAleatoire = lettresAlphabet[Math.floor(Math.random() * lettresAlphabet.length)];
-    
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 p-4 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
-          <div className="bg-yellow-500 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-4xl font-bold">{lettreAleatoire}</span>
-          </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Éclair - Questions par Lettre</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Vos 5 prochaines questions auront des réponses commençant par la lettre <strong>{lettreAleatoire}</strong>
-          </p>
           
           <button
-            onClick={() => demarrerEclairLettre(lettreAleatoire)}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center space-x-3 mx-auto"
+            onClick={demarrerRelaisSansTheme}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center space-x-3 mx-auto"
           >
-            <Play className="w-6 h-6" />
-            <span>Commencer les questions "{lettreAleatoire}"</span>
+            <Shuffle className="w-6 h-6" />
+            <span>Questions Aléatoires (Tous Thèmes)</span>
           </button>
         </div>
       </div>
     );
   }
 
-  // Écran d'identification
-  if (phaseJeu === 'identification') {
+  // Logique spéciale pour l'identification
+  if (rubriques[rubriqueActuelle].nom === 'identification' && phaseJeu === 'jeu') {
     if (questionsMelangees.length === 0) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
@@ -543,7 +489,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Règles de cette rubrique :</h3>
             <div className="space-y-2 text-gray-600">
               <div>• {rubrique.questionsParRubrique} questions à répondre</div>
-              <div>• {questionsMelangees.length > 0 ? questionsMelangees[0].tempsLimite : rubrique.nom === 'canonnade' ? 5 : rubrique.nom === 'eclair' ? 10 : rubrique.nom === 'relais' ? 15 : 20} secondes par question</div>
+              <div>• {rubrique.nom === 'canonnade' ? 30 : rubrique.nom === 'eclair' ? 5 : rubrique.nom === 'relais' ? 15 : 30} secondes par question</div>
               <div>• {questionsMelangees.length > 0 ? questionsMelangees[0].points : rubrique.nom === 'canonnade' ? 1 : rubrique.nom === 'eclair' ? 2 : rubrique.nom === 'relais' ? 3 : 4} point(s) par bonne réponse</div>
               <div>• Réponse automatique si temps écoulé</div>
             </div>
@@ -591,20 +537,18 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const rubrique = rubriques[rubriqueActuelle];
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
   
-  // Titre spécial pour les phases de l'éclair
+  // Titre spécial pour le relais avec thème
   let titrePhase = rubrique.titre;
-  if (rubrique.nom === 'eclair') {
-    if (questionActuelle < 5) {
-      titrePhase = `Éclair - ${themeEclairSelectionne}`;
-    } else {
-      titrePhase = `Éclair - Lettre "${lettreSelectionnee}"`;
-    }
+  if (rubrique.nom === 'relais' && themeRelaisSelectionne) {
+    titrePhase = `Relais - ${themeRelaisSelectionne}`;
   } else if (rubrique.nom === 'canonnade') {
     if (questionCantonnade === 0) {
       titrePhase = 'Canonnade - Question Principale';
     } else {
       titrePhase = `Canonnade - Bonus ${questionCantonnade}/4`;
     }
+  } else if (rubrique.nom === 'relais' && !relaisActif) {
+    titrePhase = 'Relais - Terminé';
   }
 
   return (
@@ -718,6 +662,15 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
                   </p>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Message spécial pour le relais arrêté */}
+          {rubrique.nom === 'relais' && !relaisActif && (
+            <div className="mt-6 text-center">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <p className="text-orange-700 font-semibold">Le relais s'arrête ici. Passage à la rubrique suivante...</p>
+              </div>
             </div>
           )}
         </div>
