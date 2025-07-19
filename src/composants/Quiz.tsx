@@ -142,10 +142,11 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
-          <div className="custom-inline-style">
+          <div className="mt-2 text-center">
             <span className="text-xl text-gray-700">{questionActuelle + (aRepondu ? 1 : 0)}</span>
             <span className="text-gray-500 ml-2">bonnes réponses</span>
           </div>
+        </div>
 
         {/* Question et réponses */}
         <div className="bg-white rounded-2xl shadow-lg p-8">

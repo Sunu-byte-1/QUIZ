@@ -276,10 +276,14 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
-          <div className="custom-inline-style">
-            <div className="text-xs text-gray-500">Canonnade</div>
-          </div>
-          <div className="p-2">
+          
+          {/* Scores par rubrique */}
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            <div className="p-2">
+              <div className="text-lg font-bold text-red-600">{score.canonnade}</div>
+              <div className="text-xs text-gray-500">Canonnade</div>
+            </div>
+            <div className="p-2">
               <div className="text-lg font-bold text-yellow-600">{score.eclair}</div>
               <div className="text-xs text-gray-500">Éclair</div>
             </div>
