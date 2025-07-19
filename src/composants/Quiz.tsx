@@ -2,6 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Home, Clock } from 'lucide-react';
 import { Question } from '../types';
 
+// Fonction pour mélanger les réponses
+const melangerReponses = (question: Question) => {
+  const reponses = [...question.reponses];
+  const bonneReponseTexte = reponses[question.bonneReponse];
+  
+  // Mélanger le tableau des réponses
+  for (let i = reponses.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [reponses[i], reponses[j]] = [reponses[j], reponses[i]];
+  }
+  
+  // Trouver le nouvel index de la bonne réponse
+  const nouvelIndexBonneReponse = reponses.findIndex(reponse => reponse === bonneReponseTexte);
+  
+  return {
+    ...question,
+    reponses,
+    bonneReponse: nouvelIndexBonneReponse
+  };
+};
 interface PropsQuiz {
   questions: Question[];
   theme: string;
@@ -17,6 +37,13 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const [afficherReponse, setAfficherReponse] = useState(false);
   const [tempsRestant, setTempsRestant] = useState(30); // 30 secondes par question
   const [timerActif, setTimerActif] = useState(true);
+  const [questionsMelangees, setQuestionsMelangees] = useState<Question[]>([]);
+
+  // Mélanger les réponses de toutes les questions au début
+  useEffect(() => {
+    const questionsAvecReponsesMelangees = questions.map(melangerReponses);
+    setQuestionsMelangees(questionsAvecReponsesMelangees);
+  }, [questions]);
 
   // Timer pour chaque question
   useEffect(() => {
@@ -52,8 +79,8 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
     setTimerActif(false);
     
     // Vérifier si la réponse est correcte
-    if (index === questions[questionActuelle].bonneReponse) {
-      const points = questions[questionActuelle].points ?? 1;
+    if (index === questionsMelangees[questionActuelle].bonneReponse) {
+      const points = questionsMelangees[questionActuelle].points ?? 1;
       setScore(score + points);
     }
 
@@ -69,14 +96,14 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   };
 
   const questionSuivante = () => {
-    if (questionActuelle < questions.length - 1) {
+    if (questionActuelle < questionsMelangees.length - 1) {
       setQuestionActuelle(questionActuelle + 1);
       setReponseSelectionnee(null);
       setARepondu(false);
       setAfficherReponse(false);
     } else {
       // Quiz terminé
-      surFinQuiz(score + (reponseSelectionnee === questions[questionActuelle].bonneReponse ? 1 : 0), questions.length);
+      surFinQuiz(score + (reponseSelectionnee === questionsMelangees[questionActuelle].bonneReponse ? 1 : 0), questionsMelangees.length);
     }
   };
 
@@ -85,7 +112,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
       return reponseSelectionnee === index ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50';
     }
 
-    if (index === questions[questionActuelle].bonneReponse) {
+    if (index === questionsMelangees[questionActuelle].bonneReponse) {
       return 'bg-green-500 text-white';
     } else if (reponseSelectionnee === index) {
       return 'bg-red-500 text-white';
@@ -97,7 +124,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const obtenirIconeReponse = (index: number) => {
     if (!afficherReponse) return null;
 
-    if (index === questions[questionActuelle].bonneReponse) {
+    if (index === questionsMelangees[questionActuelle].bonneReponse) {
       return <CheckCircle className="w-5 h-5" />;
     } else if (reponseSelectionnee === index) {
       return <XCircle className="w-5 h-5" />;
@@ -105,8 +132,20 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
     return null;
   };
 
-  const question = questions[questionActuelle];
-  const progressionPourcent = ((questionActuelle + 1) / questions.length) * 100;
+  // Attendre que les questions soient mélangées
+  if (questionsMelangees.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600">Préparation du quiz...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const question = questionsMelangees[questionActuelle];
+  const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -116,7 +155,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">{theme}</h1>
-              <p className="text-gray-600">Question {questionActuelle + 1} sur {questions.length}</p>
+              <p className="text-gray-600">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-gray-600">
@@ -142,10 +181,11 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
-          <div className="custom-inline-style">
+          <div className="mt-2 text-center">
             <span className="text-xl text-gray-700">{questionActuelle + (aRepondu ? 1 : 0)}</span>
             <span className="text-gray-500 ml-2">bonnes réponses</span>
           </div>
+        </div>
 
         {/* Question et réponses */}
         <div className="bg-white rounded-2xl shadow-lg p-8">

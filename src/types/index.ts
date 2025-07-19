@@ -39,6 +39,7 @@ export interface QuestionGenieEnHerbe extends Question {
   rubrique: 'canonnade' | 'eclair' | 'relais' | 'identification';
   tempsLimite: number; // en secondes
   points: number;
+  indices?: string[]; // Pour les questions d'identification
 }
 
 export interface ScoreGenieEnHerbe {
