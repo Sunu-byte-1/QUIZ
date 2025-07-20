@@ -80,6 +80,7 @@ function App() {
       questions = obtenirQuestionsAleatoires(config.nombreQuestions);
       setThemeActuel('Quiz Aléatoire');
     }
+    // Mettre à jour l'état du jeu
     
     setQuestionsActuelles(questions);
     setEtatJeu('quiz');
