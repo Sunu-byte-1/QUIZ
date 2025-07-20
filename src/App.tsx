@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FournisseurTheme } from './contextes/ThemeContexte';
 import { EtatJeu, Question, UtilisateurConnecte, ModeJeu, ConfigurationQuiz, ScoreGenieEnHerbe } from './types';
 import { obtenirQuestionsParTheme, obtenirQuestionsAleatoires, obtenirChallenge100Questions } from './donnees/questionsEtendues';
 import Connexion from './composants/Connexion';
@@ -199,9 +200,11 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {renduComposant()}
-    </div>
+    <FournisseurTheme>
+      <div className="App min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        {renduComposant()}
+      </div>
+    </FournisseurTheme>
   );
 }
 

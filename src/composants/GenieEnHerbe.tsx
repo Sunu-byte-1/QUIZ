@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator, Atom, Globe, Computer, Shuffle } from 'lucide-react';
+import BasculeurTheme from './BasculeurTheme';
 import { QuestionGenieEnHerbe, ScoreGenieEnHerbe } from '../types';
-import { obtenirQuestionsGenieEnHerbe, rubriquesGenieEnHerbe, themesDisponibles } from '../donnees/questionsEtendues';
+import { themesDisponibles } from '../donnees/questionsEtendues';
+import { filtrerQuestionsDifficiles, obtenirQuestionsIdentification } from '../utilitaires/questionsUtilitaires';
 
 // Fonction pour mélanger les réponses
 const melangerReponses = (question: QuestionGenieEnHerbe) => {
@@ -60,6 +62,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const [questionCantonnade, setQuestionCantonnade] = useState<number>(0); // 0 = question principale, 1-4 = questions bonus
   const [cantonnadeReussie, setCantonnadeReussie] = useState<boolean>(false);
   const [relaisActif, setRelaisActif] = useState<boolean>(true);
+  const [questionsIdentificationActuelles, setQuestionsIdentificationActuelles] = useState<QuestionGenieEnHerbe[]>([]);
 
   const rubriques = [
     { nom: 'canonnade', titre: 'Canonnade', description: '1 question difficile + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5, pointsParQuestion: 10, tempsParQuestion: 30 },
@@ -72,56 +75,30 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const themesDisponiblesRelais = ['Mathématiques', 'Informatique', 'Physique', 'Astronomie', 'Histoire', 'Géographie', 'Biologie', 'Chimie'];
 
   // Charger les questions pour la rubrique actuelle
-  // Fonction pour obtenir uniquement les questions difficiles
-  const obtenirQuestionsFiltered = (theme: string, nombreQuestions: number): QuestionGenieEnHerbe[] => {
-    const questionsTotal = obtenirQuestionsGenieEnHerbe(theme, 1000); // Charger beaucoup pour avoir assez de questions difficiles
-    // Fonction de mélange typée pour éviter l'erreur TypeScript
-    const shuffle = (arr: QuestionGenieEnHerbe[]): QuestionGenieEnHerbe[] => {
-      const shuffled = [...arr];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    };
-
-    // Pour l'éclair et la canonnade, pas de filtrage par difficulté
-    if (theme === 'eclair' || theme === 'canonnade') {
-      return shuffle(questionsTotal).slice(0, nombreQuestions);
-    }
-    
-    // Pour les autres rubriques, filtrer les questions difficiles
-    const difficiles = questionsTotal.filter(q => q.difficulte === 'difficile');
-    const difficilesMelangees = shuffle(difficiles);
-    
-    if (difficilesMelangees.length >= nombreQuestions) {
-      return difficilesMelangees.slice(0, nombreQuestions);
-    }
-    
-    // Si pas assez de difficiles, compléter avec des moyennes
-    const autres = shuffle(questionsTotal.filter(q => q.difficulte === 'moyen'));
-    return [...difficilesMelangees, ...autres].slice(0, nombreQuestions);
-  };
 
   useEffect(() => {
     if (phaseJeu === 'jeu') {
       const rubrique = rubriques[rubriqueActuelle];
       let nouvellesQuestions: QuestionGenieEnHerbe[] = [];
 
-      if (rubrique.nom === 'culture') {
+      if (rubrique.nom === 'identification') {
+        // Pour l'identification, utiliser la logique spéciale
+        const questionsId = obtenirQuestionsIdentification(themeRelaisSelectionne);
+        setQuestionsIdentificationActuelles(questionsId);
+        nouvellesQuestions = questionsId;
+      } else if (rubrique.nom === 'culture') {
         if (!themeRelaisSelectionne) {
           // On attend la sélection du thème
           return;
         }
         // Pour culture générale, utiliser le thème sélectionné
-        nouvellesQuestions = obtenirQuestionsFiltered(themeRelaisSelectionne, rubrique.questionsParRubrique);
+        nouvellesQuestions = filtrerQuestionsDifficiles(themeRelaisSelectionne, rubrique.questionsParRubrique);
       } else if (rubrique.nom === 'relais' && themeRelaisSelectionne) {
         // Pour le relais avec thème
-        nouvellesQuestions = obtenirQuestionsFiltered(themeRelaisSelectionne, rubrique.questionsParRubrique);
+        nouvellesQuestions = filtrerQuestionsDifficiles(themeRelaisSelectionne, rubrique.questionsParRubrique);
       } else {
         // Pour les autres rubriques (canonnade, éclair, etc.)
-        nouvellesQuestions = obtenirQuestionsFiltered(rubrique.nom, rubrique.questionsParRubrique);
-        nouvellesQuestions = obtenirQuestionsFiltered(rubrique.nom, rubrique.questionsParRubrique);
+        nouvellesQuestions = filtrerQuestionsDifficiles('Mathématiques', rubrique.questionsParRubrique);
       }
       // Correction du temps limite pour chaque question selon la rubrique
       nouvellesQuestions = nouvellesQuestions.map(q => ({
@@ -431,19 +408,22 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubrique = rubriques[rubriqueActuelle];
     const isCulture = rubrique.nom === 'culture';
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-${isCulture ? 'green-50 to-green-100' : 'blue-50 to-cyan-100'} p-4 flex items-center justify-center`}>
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
+      <div className={`min-h-screen bg-gradient-to-br from-${isCulture ? 'green-50 to-green-100' : 'blue-50 to-cyan-100'} dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500`}>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center transition-colors duration-300">
+          <div className="absolute top-4 right-4">
+            <BasculeurTheme />
+          </div>
           <div className={`${isCulture ? 'bg-green-600' : 'bg-blue-500'} text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6`}>
             <Target className="w-12 h-12" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">{isCulture ? 'Culture Générale - Sélection du Thème' : 'Relais - Sélection du Thème'}</h1>
-          <p className="text-xl text-gray-600 mb-8">Choisissez un thème ou jouez avec des questions aléatoires</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 animate-fade-in">{isCulture ? 'Culture Générale - Sélection du Thème' : 'Relais - Sélection du Thème'}</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">Choisissez un thème ou jouez avec des questions aléatoires</p>
           <div className="grid grid-cols-2 gap-4 mb-6">
             {themesDisponiblesRelais.map((theme) => (
               <button
                 key={theme}
                 onClick={() => isCulture ? demarrerCultureAvecTheme(theme) : demarrerRelaisAvecTheme(theme)}
-                className={`${isCulture ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-500 hover:bg-blue-600'} text-white p-4 rounded-xl font-semibold transition-all transform hover:scale-105`}
+                className={`${isCulture ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-500 hover:bg-blue-600'} text-white p-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg animate-slide-up`}
               >
                 {theme}
               </button>
@@ -451,7 +431,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
           </div>
           <button
             onClick={demarrerRelaisSansTheme}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center space-x-3 mx-auto"
+            className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-3 mx-auto"
           >
             <Shuffle className="w-6 h-6" />
             <span>Questions Aléatoires (Tous Thèmes)</span>
@@ -465,51 +445,55 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   if (rubriques[rubriqueActuelle].nom === 'identification' && phaseJeu === 'jeu') {
     if (questionsMelangees.length === 0) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-xl text-gray-600">Chargement de l'identification...</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">Chargement de l'identification...</p>
           </div>
         </div>
       );
     }
 
-    const question = questionsMelangees[questionActuelle];
+    // Utiliser les questions d'identification spéciales
+    const question = questionsIdentificationActuelles[indiceActuel] || questionsMelangees[questionActuelle];
     // Limite à 4 indices
     const indices = question.indices ? question.indices.slice(0, 4) : [];
     const pointsRestants = [40, 30, 20, 10][indiceActuel];
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 transition-colors duration-300">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center space-x-4">
                 <div className="bg-purple-500 text-white p-3 rounded-xl">
                   <Target className="w-6 h-6" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-800">Identification</h1>
-                  <p className="text-gray-600">Indice {indiceActuel + 1}/4 - {pointsRestants} points</p>
+                  <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Identification</h1>
+                  <p className="text-gray-600 dark:text-gray-300">Indice {indiceActuel + 1}/4 - {pointsRestants} points</p>
                 </div>
               </div>
-              <div className="text-center">
+              <div className="flex items-center space-x-4">
+                <BasculeurTheme />
+                <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{score.total}</div>
                 <div className="text-gray-500 text-sm">points</div>
+              </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-colors duration-300">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 text-center">
               Qu'est-ce que c'est ?
             </h2>
             
             {indices.length > 0 && (
-              <div className="bg-purple-50 rounded-xl p-6 mb-6">
+              <div className="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-6 mb-6 transition-colors duration-300">
                 <h3 className="font-semibold text-purple-800 mb-4">Indices révélés :</h3>
                 {indices.slice(0, indiceActuel + 1).map((indice, index) => (
-                  <div key={index} className="mb-2 p-3 bg-white rounded-lg">
+                  <div key={index} className="mb-2 p-3 bg-white dark:bg-gray-700 rounded-lg transition-colors duration-300 animate-slide-up">
                     <span className="font-medium text-purple-600">Indice {index + 1}:</span> {indice}
                   </div>
                 ))}
@@ -536,7 +520,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
               <div className="text-center">
                 <button
                   onClick={gererIndiceIdentification}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
                 >
                   Révéler l'indice suivant ({[30, 20, 10][indiceActuel]} points)
                 </button>
@@ -570,18 +554,22 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubrique = rubriques[rubriqueActuelle];
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-2xl text-center transition-colors duration-300">
           <div className="flex justify-between items-center mb-8">
-            <button title="Action"
+            <button
               onClick={surRetourAccueil}
-              className="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors"
+              className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white p-2 rounded-lg transition-all duration-300 transform hover:scale-105"
+              title="Retour à l'accueil"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="text-right">
+            <div className="flex items-center space-x-4">
+              <BasculeurTheme />
+              <div className="text-right">
               <div className="text-2xl font-bold text-purple-600">{score.total}</div>
-              <div className="text-gray-600 text-sm">Points totaux</div>
+              <div className="text-gray-600 dark:text-gray-300 text-sm">Points totaux</div>
+              </div>
             </div>
           </div>
 
@@ -589,12 +577,12 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
             <Zap className="w-12 h-12" />
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">{rubrique.titre}</h1>
-          <p className="text-xl text-gray-600 mb-8">{rubrique.description}</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 animate-fade-in">{rubrique.titre}</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">{rubrique.description}</p>
 
-          <div className="bg-gray-50 rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Règles de cette rubrique :</h3>
-            <div className="space-y-2 text-gray-600">
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8 transition-colors duration-300">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Règles de cette rubrique :</h3>
+            <div className="space-y-2 text-gray-600 dark:text-gray-300">
               <div>• {rubrique.questionsParRubrique} questions à répondre</div>
               <div>• {rubrique.nom === 'canonnade' ? 30 : rubrique.nom === 'eclair' ? 5 : rubrique.nom === 'relais' ? 15 : 30} secondes par question</div>
               <div>• {questionsMelangees.length > 0 ? questionsMelangees[0].points : rubrique.nom === 'canonnade' ? 1 : rubrique.nom === 'eclair' ? 2 : rubrique.nom === 'relais' ? 3 : 4} point(s) par bonne réponse</div>
@@ -604,7 +592,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
 
           <button
             onClick={demarrerRubrique}
-            className={`${rubrique.couleur} hover:opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center space-x-3 mx-auto`}
+            className={`${rubrique.couleur} hover:opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center space-x-3 mx-auto`}
           >
             <Play className="w-6 h-6" />
             <span>Commencer {rubrique.titre}</span>
@@ -631,10 +619,10 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   // Écran de jeu
   if (questionsMelangees.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Chargement des questions...</p>
+          <p className="text-xl text-gray-600 dark:text-gray-300">Chargement des questions...</p>
         </div>
       </div>
     );
@@ -659,34 +647,35 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
       <div className="max-w-4xl mx-auto">
         {/* En-tête */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-4">
               <div className={`${rubrique.couleur} text-white p-3 rounded-xl`}>
                 <Zap className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">{titrePhase}</h1>
-                <p className="text-gray-600">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{titrePhase}</h1>
+                <p className="text-gray-600 dark:text-gray-300">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
               </div>
             </div>
             <div className="flex items-center space-x-6">
+              <BasculeurTheme />
               <div className="text-center">
                 <div className={`text-3xl font-bold ${tempsRestant <= 5 ? 'text-red-500' : 'text-gray-700'}`}>
                   {tempsRestant}
                 </div>
-                <div className="text-gray-500 text-sm">secondes</div>
+                <div className="text-gray-500 dark:text-gray-400 text-sm">secondes</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{score.total}</div>
-                <div className="text-gray-500 text-sm">points</div>
+                <div className="text-gray-500 dark:text-gray-400 text-sm">points</div>
               </div>
               <button
                 onClick={surRetourAccueil}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-300"
               >
                 Quitter
               </button>
@@ -696,7 +685,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
           {/* Barre de progression */}
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
-              className={`${rubrique.couleur} h-3 rounded-full transition-all duration-300`}
+              className={`${rubrique.couleur} h-3 rounded-full transition-all duration-500`}
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
@@ -705,31 +694,31 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   <div className="grid grid-cols-5 gap-4 mt-4">
     <div className="p-2">
       <div className="text-lg font-bold text-red-600">{score.canonnade}</div>
-      <div className="text-xs text-gray-500">Canonnade</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Canonnade</div>
     </div>
     <div className="p-2">
       <div className="text-lg font-bold text-yellow-600">{score.eclair}</div>
-      <div className="text-xs text-gray-500">Éclair</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Éclair</div>
     </div>
     <div className="p-2">
       <div className="text-lg font-bold text-green-600">{score.culture}</div>
-      <div className="text-xs text-gray-500">Culture Générale</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Culture Générale</div>
     </div>
     <div className="p-2">
       <div className="text-lg font-bold text-blue-600">{score.relais}</div>
-      <div className="text-xs text-gray-500">Relais</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Relais</div>
     </div>
     <div className="p-2">
       <div className="text-lg font-bold text-purple-600">{score.identification}</div>
-      <div className="text-xs text-gray-500">Identification</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Identification</div>
     </div>
   </div>
         </div>
 
         {/* Question et réponses */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-colors duration-300">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 flex-1 text-center">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 flex-1 text-center">
               {question.question}
             </h2>
             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl ${
@@ -745,8 +734,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
                 key={index}
                 onClick={() => gererSelectionReponse(index)}
                 disabled={aRepondu}
-                className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
-                  aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 hover:border-purple-300'
+                className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
+                  aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500 transform hover:scale-[1.02]'
                 }`}
               >
                 <span className="text-lg">{reponse}</span>

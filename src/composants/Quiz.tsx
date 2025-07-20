@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Home, Clock } from 'lucide-react';
+import BasculeurTheme from './BasculeurTheme';
 import { Question } from '../types';
 
 // Fonction pour mélanger les réponses
@@ -38,6 +39,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const [tempsRestant, setTempsRestant] = useState(30); // 30 secondes par question
   const [timerActif, setTimerActif] = useState(true);
   const [questionsMelangees, setQuestionsMelangees] = useState<Question[]>([]);
+  const [bonnesReponses, setBonnesReponses] = useState(0);
 
   // Mélanger les réponses de toutes les questions au début
   useEffect(() => {
@@ -82,6 +84,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
     if (index === questionsMelangees[questionActuelle].bonneReponse) {
       const points = questionsMelangees[questionActuelle].points ?? 1;
       setScore(score + points);
+      setBonnesReponses(bonnesReponses + 1);
     }
 
     // Passer à la question suivante après 2 secondes
@@ -103,7 +106,8 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
       setAfficherReponse(false);
     } else {
       // Quiz terminé
-      surFinQuiz(score + (reponseSelectionnee === questionsMelangees[questionActuelle].bonneReponse ? 1 : 0), questionsMelangees.length);
+      const scoreTotal = reponseSelectionnee === questionsMelangees[questionActuelle].bonneReponse ? bonnesReponses + 1 : bonnesReponses;
+      surFinQuiz(scoreTotal, questionsMelangees.length);
     }
   };
 
@@ -135,10 +139,10 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   // Attendre que les questions soient mélangées
   if (questionsMelangees.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Préparation du quiz...</p>
+          <p className="text-xl text-gray-600 dark:text-gray-300">Préparation du quiz...</p>
         </div>
       </div>
     );
@@ -148,25 +152,26 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
       <div className="max-w-4xl mx-auto">
         {/* En-tête */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">{theme}</h1>
-              <p className="text-gray-600">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 animate-fade-in">{theme}</h1>
+              <p className="text-gray-600 dark:text-gray-300">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
             </div>
             <div className="flex items-center space-x-4">
+              <BasculeurTheme />
               <div className="flex items-center space-x-2 text-gray-600">
                 <Clock className="w-5 h-5" />
-                <span className={`font-bold ${tempsRestant <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
+                <span className={`font-bold ${tempsRestant <= 10 ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
                   {tempsRestant}s
                 </span>
               </div>
               <button
                 onClick={surRetourAccueil}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
               >
                 <Home className="w-4 h-4" />
                 <span>Accueil</span>
@@ -177,19 +182,19 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
           {/* Barre de progression */}
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
-              className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+              className="bg-blue-600 h-3 rounded-full transition-all duration-500"
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
           <div className="mt-2 text-center">
-            <span className="text-xl text-gray-700">{questionActuelle + (aRepondu ? 1 : 0)}</span>
-            <span className="text-gray-500 ml-2">bonnes réponses</span>
+            <span className="text-xl text-gray-700 dark:text-gray-300">{bonnesReponses}</span>
+            <span className="text-gray-500 dark:text-gray-400 ml-2">bonnes réponses</span>
           </div>
         </div>
 
         {/* Question et réponses */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-center leading-relaxed">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-colors duration-300">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-8 text-center leading-relaxed">
             {question.question}
           </h2>
           
@@ -199,8 +204,8 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
                 key={index}
                 onClick={() => gererSelectionReponse(index)}
                 disabled={aRepondu}
-                className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
-                  aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 hover:border-blue-300'
+                className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
+                  aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transform hover:scale-[1.02]'
                 }`}
               >
                 <span className="text-lg">{reponse}</span>

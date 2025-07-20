@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trophy, RotateCcw, Home, Target, Award, Star, Zap } from 'lucide-react';
+import BasculeurTheme from './BasculeurTheme';
 import { ScoreGenieEnHerbe } from '../types';
 
 interface PropsResultatsEtendus {
@@ -94,24 +95,27 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
   }, [score, totalQuestions, scoreGenieEnHerbe, theme, mode, pourcentage, pourcentageGenieEnHerbe, temps]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-4xl transition-colors duration-300">
+        <div className="absolute top-4 right-4">
+          <BasculeurTheme />
+        </div>
         {/* Icône et titre */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             {obtenirIconePerformance()}
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{obtenirTitreMode()} terminé !</h1>
-          <p className="text-gray-600">{obtenirMessageFelicitations()}</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 animate-fade-in">{obtenirTitreMode()} terminé !</h1>
+          <p className="text-gray-600 dark:text-gray-300">{obtenirMessageFelicitations()}</p>
         </div>
 
         {/* Résultats principaux */}
-        <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 mb-8 transition-colors duration-300">
           {mode === 'genieEnHerbe' && scoreGenieEnHerbe ? (
             // Résultats Génie en Herbe
             <div>
               <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">Score Génie en Herbe</h2>
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Score Génie en Herbe</h2>
                 <div className={`text-6xl font-bold ${obtenirCouleurScore()} mb-2`}>
                   {scoreGenieEnHerbe.total}/{scoreMaxGenieEnHerbe}
                 </div>
@@ -122,25 +126,25 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
 
               {/* Détail par rubrique */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-white rounded-lg border-l-4 border-red-500">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg border-l-4 border-red-500 transition-colors duration-300">
                   <Zap className="w-8 h-8 text-red-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-red-600">{scoreGenieEnHerbe.canonnade}/10</div>
-                  <div className="text-gray-600 text-sm">Canonnade</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Canonnade</div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-lg border-l-4 border-yellow-500">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg border-l-4 border-yellow-500 transition-colors duration-300">
                   <Zap className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-yellow-600">{scoreGenieEnHerbe.eclair}/20</div>
-                  <div className="text-gray-600 text-sm">Éclair</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Éclair</div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-lg border-l-4 border-blue-500">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg border-l-4 border-blue-500 transition-colors duration-300">
                   <Zap className="w-8 h-8 text-blue-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-blue-600">{scoreGenieEnHerbe.relais}/30</div>
-                  <div className="text-gray-600 text-sm">Relais</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Relais</div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-lg border-l-4 border-purple-500">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg border-l-4 border-purple-500 transition-colors duration-300">
                   <Zap className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-purple-600">{scoreGenieEnHerbe.identification}/40</div>
-                  <div className="text-gray-600 text-sm">Identification</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Identification</div>
                 </div>
               </div>
             </div>
@@ -148,7 +152,7 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
             // Résultats quiz normal
             <div>
               <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">Votre score</h2>
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Votre score</h2>
                 <div className={`text-6xl font-bold ${obtenirCouleurScore()} mb-2`}>
                   {score}/{totalQuestions}
                 </div>
@@ -158,17 +162,17 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-white rounded-lg">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg transition-colors duration-300">
                   <div className="text-2xl font-bold text-blue-600">{score}</div>
-                  <div className="text-gray-600 text-sm">Bonnes réponses</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Bonnes réponses</div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-lg">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg transition-colors duration-300">
                   <div className="text-2xl font-bold text-red-600">{totalQuestions! - score!}</div>
-                  <div className="text-gray-600 text-sm">Erreurs</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Erreurs</div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-lg">
+                <div className="text-center p-4 bg-white dark:bg-gray-600 rounded-lg transition-colors duration-300">
                   <div className="text-2xl font-bold text-gray-600">{totalQuestions}</div>
-                  <div className="text-gray-600 text-sm">Total</div>
+                  <div className="text-gray-600 dark:text-gray-300 text-sm">Total</div>
                 </div>
               </div>
             </div>
@@ -176,9 +180,9 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
         </div>
 
         {/* Détails du quiz */}
-        <div className="bg-blue-50 rounded-xl p-4 mb-8">
-          <h3 className="font-semibold text-gray-700 mb-2">Détails du quiz</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 mb-8 transition-colors duration-300">
+          <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Détails du quiz</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex justify-between">
               <span>Mode :</span>
               <span className="font-medium">{obtenirTitreMode()}</span>
@@ -205,7 +209,7 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
         </div>
 
         {/* Encouragement et conseils */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 text-white rounded-xl p-6 mb-8 transition-all duration-300">
           <h3 className="font-semibold mb-2">Le saviez-vous ?</h3>
           <p className="text-blue-100 text-sm">
             {mode === 'genieEnHerbe' 
@@ -227,14 +231,14 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={surRejouer}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
           >
             <RotateCcw className="w-5 h-5" />
             <span>Rejouer</span>
           </button>
           <button
             onClick={surRetourAccueil}
-            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2"
+            className="flex-1 bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
           >
             <Home className="w-5 h-5" />
             <span>Accueil</span>
@@ -245,14 +249,14 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
         <div className="mt-6 text-center">
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className={`h-2 rounded-full transition-all duration-1000 ${
+              className={`h-2 rounded-full transition-all duration-1000 animate-pulse ${
                 (scoreGenieEnHerbe ? pourcentageGenieEnHerbe : pourcentage) >= 80 ? 'bg-green-500' : 
                 (scoreGenieEnHerbe ? pourcentageGenieEnHerbe : pourcentage) >= 60 ? 'bg-yellow-500' : 'bg-red-500'
               }`}
               style={{ width: `${scoreGenieEnHerbe ? pourcentageGenieEnHerbe : pourcentage}%` }}
             ></div>
           </div>
-          <p className="text-sm text-gray-500 mt-2">Performance globale</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Performance globale</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Play, Shuffle, Trophy, Target, BookOpen, Zap } from 'lucide-react';
+import BasculeurTheme from './BasculeurTheme';
 import { ModeJeu } from '../types';
 
 interface PropsSelectionMode {
@@ -50,21 +51,24 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
       <div className="max-w-6xl mx-auto">
         {/* En-tête */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Bienvenue, {utilisateur} !</h1>
-              <p className="text-gray-600">Choisissez votre mode de jeu préféré</p>
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 animate-fade-in">Bienvenue, {utilisateur} !</h1>
+              <p className="text-gray-600 dark:text-gray-300">Choisissez votre mode de jeu préféré</p>
             </div>
-            <button
-              onClick={surDeconnexion}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Déconnexion
-            </button>
+            <div className="flex items-center space-x-4">
+              <BasculeurTheme />
+              <button
+                onClick={surDeconnexion}
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105"
+              >
+                Déconnexion
+              </button>
+            </div>
           </div>
         </div>
 
@@ -74,7 +78,7 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
             <button
               key={mode.id}
               onClick={() => surSelectionMode(mode.id)}
-              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-8 rounded-2xl shadow-lg transition-all transform hover:scale-105 group`}
+              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-8 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group animate-slide-up`}
             >
               <div className="text-center">
                 <div className="flex justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -92,30 +96,30 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
         </div>
 
         {/* Statistiques globales */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">Statistiques de l'application</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6">Statistiques de l'application</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-xl">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl transition-colors duration-300">
               <div className="text-3xl font-bold text-blue-600 mb-2">12</div>
-              <div className="text-gray-600">Thèmes disponibles</div>
+              <div className="text-gray-600 dark:text-gray-300">Thèmes disponibles</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-xl">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-xl transition-colors duration-300">
               <div className="text-3xl font-bold text-green-600 mb-2">1200+</div>
-              <div className="text-gray-600">Questions au total</div>
+              <div className="text-gray-600 dark:text-gray-300">Questions au total</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-xl">
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-xl transition-colors duration-300">
               <div className="text-3xl font-bold text-purple-600 mb-2">4</div>
-              <div className="text-gray-600">Modes de jeu</div>
+              <div className="text-gray-600 dark:text-gray-300">Modes de jeu</div>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-xl">
+            <div className="text-center p-4 bg-red-50 dark:bg-red-900/30 rounded-xl transition-colors duration-300">
               <div className="text-3xl font-bold text-red-600 mb-2">∞</div>
-              <div className="text-gray-600">Possibilités</div>
+              <div className="text-gray-600 dark:text-gray-300">Possibilités</div>
             </div>
           </div>
         </div>
 
         {/* Conseils et astuces */}
-        <div className="mt-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl p-6">
+        <div className="mt-8 bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white rounded-2xl p-6 transition-all duration-300">
           <h3 className="text-xl font-bold mb-4">Conseils pour bien jouer</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-start space-x-2">
