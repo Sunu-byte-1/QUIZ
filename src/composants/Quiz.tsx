@@ -213,8 +213,20 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
                 key={index}
                 onClick={() => gererSelectionReponse(index)}
                 disabled={aRepondu}
-                className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
-                  aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transform hover:scale-[1.02]'
+               className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${
+                 !afficherReponse ? (
+                   reponseSelectionnee === index 
+                     ? 'bg-blue-500 text-white border-blue-500' 
+                     : 'bg-gray-800 dark:bg-gray-700 text-white border-gray-600 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-400'
+                 ) : (
+                   index === question.bonneReponse
+                     ? 'bg-green-500 text-white border-green-500'
+                     : reponseSelectionnee === index && reponseSelectionnee !== null
+                       ? 'bg-red-500 text-white border-red-500'
+                       : 'bg-gray-600 text-gray-300 border-gray-500'
+                 )
+               } ${
+                 aRepondu ? 'cursor-not-allowed' : 'cursor-pointer transform hover:scale-[1.02]'
                 }`}
               >
                 <span className="text-sm sm:text-base lg:text-lg">{reponse}</span>

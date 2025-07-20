@@ -73,22 +73,22 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
         </div>
 
         {/* Grille des modes de jeu */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-8">
           {modes.map((mode) => (
             <button
               key={mode.id}
               onClick={() => surSelectionMode(mode.id)}
-              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-4 sm:p-6 lg:p-8 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group animate-slide-up`}
+              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-3 sm:p-4 lg:p-6 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group animate-slide-up`}
             >
               <div className="text-center">
-                <div className="flex justify-center mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
+                <div className="flex justify-center mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
                   {mode.icone}
                 </div>
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 lg:mb-4">{mode.titre}</h3>
-                <p className="text-white/90 text-sm sm:text-base lg:text-lg leading-relaxed">{mode.description}</p>
-                <div className="flex items-center justify-center mt-3 sm:mt-4 lg:mt-6 text-white/80 group-hover:text-white">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 lg:mb-3">{mode.titre}</h3>
+                <p className="text-white/90 text-xs sm:text-sm lg:text-base leading-relaxed">{mode.description}</p>
+                <div className="flex items-center justify-center mt-2 sm:mt-3 lg:mt-4 text-white/80 group-hover:text-white">
                   <Play className="w-6 h-6 mr-2" />
-                  <span className="font-medium text-sm sm:text-base">Commencer</span>
+                  <span className="font-medium text-xs sm:text-sm lg:text-base">Commencer</span>
                 </div>
               </div>
             </button>

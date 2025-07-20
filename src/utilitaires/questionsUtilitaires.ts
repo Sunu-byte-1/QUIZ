@@ -1,7 +1,33 @@
 import { Question, QuestionGenieEnHerbe } from '../types';
-import { obtenirQuestionsParTheme } from '../donnees/questionsEtendues';
+import { obtenirQuestionsParTheme, themesDisponibles } from '../donnees/questionsEtendues';
+
+export const obtenirQuestionsAleatoiresTousThemes = (nombreQuestions: number): QuestionGenieEnHerbe[] => {
+  // Obtenir des questions de tous les thèmes disponibles
+  const toutesLesQuestions: Question[] = [];
+  
+  // Collecter des questions de chaque thème
+  themesDisponibles.forEach(theme => {
+    const questionsTheme = obtenirQuestionsParTheme(theme, 50); // 50 questions par thème
+    toutesLesQuestions.push(...questionsTheme);
+  });
+  
+  // Mélanger toutes les questions
+  const questionsMelangees = [...toutesLesQuestions].sort(() => Math.random() - 0.5);
+  
+  // Limiter le nombre et convertir en QuestionGenieEnHerbe
+  return questionsMelangees.slice(0, nombreQuestions).map((question: Question) => ({
+    ...question,
+    rubrique: 'eclair' as const,
+    tempsLimite: 15,
+    points: 5
+  }));
+};
 
 export const filtrerQuestionsDifficiles = (theme: string, nombreQuestions: number): QuestionGenieEnHerbe[] => {
+  if (!theme) {
+    return obtenirQuestionsAleatoiresTousThemes(nombreQuestions);
+  }
+  
   const toutesLesQuestions = obtenirQuestionsParTheme(theme, 1000);
   
   // Filtrer uniquement les questions difficiles
@@ -21,51 +47,82 @@ export const filtrerQuestionsDifficiles = (theme: string, nombreQuestions: numbe
   }));
 };
 
-export const obtenirQuestionsIdentification = (theme?: string): QuestionGenieEnHerbe[] => {
-  // Pour l'identification, on prend des questions de tous les thèmes si aucun thème spécifique
-  const questionsSource = theme ? 
-    obtenirQuestionsParTheme(theme, 1000) : 
-    obtenirQuestionsParTheme('Mathématiques', 200)
-      .concat(obtenirQuestionsParTheme('Physique', 200))
-      .concat(obtenirQuestionsParTheme('Histoire', 200))
-      .concat(obtenirQuestionsParTheme('Biologie', 200));
+export const obtenirQuestionsRelaisAleatoires = (nombreQuestions: number): QuestionGenieEnHerbe[] => {
+  return obtenirQuestionsAleatoiresTousThemes(nombreQuestions).map(question => ({
+    ...question,
+    rubrique: 'relais' as const,
+    tempsLimite: 15,
+    points: 10
+  }));
+};
 
-  // Grouper les questions par réponse correcte
-  const groupesParReponse = new Map<string, Question[]>();
-  
-  questionsSource.forEach((question: Question) => {
-    const reponseCorrecte = question.reponses[question.bonneReponse];
-    if (!groupesParReponse.has(reponseCorrecte)) {
-      groupesParReponse.set(reponseCorrecte, []);
-    }
-    groupesParReponse.get(reponseCorrecte)!.push(question);
-  });
-
-  // Trouver un groupe avec au moins 4 questions
-  for (const [reponse, questions] of groupesParReponse) {
-    if (questions.length >= 4) {
-      // Trier par difficulté (difficile -> moyen -> facile)
-      const questionsTries = questions.sort((a, b) => {
-        const ordreDifficulte = { 'difficile': 0, 'moyen': 1, 'facile': 2 };
-        return (ordreDifficulte[a.difficulte || 'moyen'] || 1) - (ordreDifficulte[b.difficulte || 'moyen'] || 1);
-      });
-
-      // Prendre les 4 premières et créer des indices progressifs
-      return questionsTries.slice(0, 4).map((question: Question, index: number) => ({
-        ...question,
-        rubrique: 'identification' as const,
-        tempsLimite: 30,
-        points: [40, 30, 20, 10][index],
-        indices: [
-          `Catégorie: ${question.theme}`,
-          `Difficulté: ${question.difficulte || 'moyen'}`,
-          `Première lettre: ${question.reponses[question.bonneReponse][0]}`,
-          `Nombre de lettres: ${question.reponses[question.bonneReponse].length}`
-        ]
-      }));
-    }
+// Données pour l'identification : pays, nationalités, capitales et monnaies
+const donneesIdentification = [
+  {
+    question: "Quel est ce pays ?",
+    reponse: "France",
+    indices: [
+      "Pays européen avec une riche histoire",
+      "Connu pour la Tour Eiffel et le Louvre",
+      "Capitale : Paris",
+      "Monnaie : Euro"
+    ]
+  },
+  {
+    question: "Quelle est cette nationalité ?",
+    reponse: "Japonaise",
+    indices: [
+      "Nationalité d'un pays insulaire d'Asie",
+      "Connu pour les sushis et les mangas",
+      "Capitale : Tokyo",
+      "Monnaie : Yen"
+    ]
+  },
+  {
+    question: "Quelle est cette capitale ?",
+    reponse: "Londres",
+    indices: [
+      "Capitale d'un royaume européen",
+      "Connue pour Big Ben et la Tamise",
+      "Pays : Royaume-Uni",
+      "Monnaie : Livre sterling"
+    ]
+  },
+  {
+    question: "Quelle est cette monnaie ?",
+    reponse: "Dollar américain",
+    indices: [
+      "Monnaie d'une grande puissance mondiale",
+      "Utilisée dans de nombreux pays",
+      "Symbole : $",
+      "Pays principal : États-Unis"
+    ]
   }
+];
+  
+export const obtenirQuestionsIdentification = (): QuestionGenieEnHerbe[] => {
+  // Choisir aléatoirement une donnée d'identification
+  const donneesAleatoires = donneesIdentification[Math.floor(Math.random() * donneesIdentification.length)];
 
-  // Fallback si aucun groupe approprié n'est trouvé
-  return [];
+  // Créer des réponses alternatives plausibles
+  const autresReponses = [
+    "Allemagne", "Espagne", "Italienne", "Chinoise", "Berlin", "Madrid", "Euro", "Yen"
+  ].filter(r => r !== donneesAleatoires.reponse).slice(0, 3);
+
+  const reponses = [donneesAleatoires.reponse, ...autresReponses].sort(() => Math.random() - 0.5);
+  const bonneReponse = reponses.indexOf(donneesAleatoires.reponse);
+  
+  // Créer une seule question avec 4 indices progressifs
+  return [{
+    id: 1,
+    question: donneesAleatoires.question,
+    reponses: reponses,
+    bonneReponse: bonneReponse,
+    theme: 'Géographie',
+    difficulte: 'difficile' as const,
+    rubrique: 'identification' as const,
+    tempsLimite: 30,
+    points: 40,
+    indices: donneesAleatoires.indices
+  }];
 };

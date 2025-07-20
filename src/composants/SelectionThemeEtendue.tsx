@@ -137,21 +137,21 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
         {modeSelectionne === 'theme' && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6">Choisissez un thème</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {themesDisponibles.map((theme) => (
                 <button
                   key={theme}
                   onClick={() => gererSelectionTheme(theme)}
-                  className="p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-500 animate-slide-up"
+                  className="p-3 sm:p-4 lg:p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-500 animate-slide-up"
                 >
-                  <div className={`${couleursPourTheme[theme] || 'bg-gray-500'} text-white w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                    {iconesPourTheme[theme] || <BookOpen className="w-8 h-8" />}
+                  <div className={`${couleursPourTheme[theme] || 'bg-gray-500'} text-white w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform`}>
+                    {React.cloneElement(iconesPourTheme[theme] || <BookOpen />, { className: "w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" })}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{theme}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">100 questions disponibles</p>
-                  <div className="flex items-center justify-center mt-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Play className="w-5 h-5 mr-2" />
-                    <span className="font-medium">Commencer</span>
+                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2">{theme}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm hidden sm:block">100 questions</p>
+                  <div className="flex items-center justify-center mt-2 sm:mt-3 lg:mt-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                    <span className="font-medium text-xs sm:text-sm">Commencer</span>
                   </div>
                 </button>
               ))}
