@@ -1292,7 +1292,7 @@ export const questionsGenieEnHerbe: Record<string, QuestionGenieEnHerbe[]> = {
     { id: 2002, question: "Premier président français", reponses: ["Louis-Napoléon Bonaparte", "Charles de Gaulle", "François Mitterrand", "Jacques Chirac"], bonneReponse: 0, theme: "Histoire", rubrique: "canonnade", tempsLimite: 5, points: 10 },
     
     { id: 2003, question: "Planète la plus proche du Soleil", reponses: ["Mercure", "Vénus", "Mars", "Terre"], bonneReponse: 0, theme: "Astronomie", rubrique: "canonnade", tempsLimite: 5, points: 10 },
-
+//q
     { id: 2004, question: "Gaz le plus abondant dans l'air", reponses: ["Azote", "Oxygène", "Carbone", "Hydrogène"], bonneReponse: 0, theme: "Chimie", rubrique: "canonnade", tempsLimite: 5, points: 10 },
     
     { id: 2005, question: "Inventeur de l'ampoule", reponses: ["Thomas Edison", "Albert Einstein", "Isaac Newton", "Marie Curie"], bonneReponse: 0, theme: "Histoire", rubrique: "canonnade", tempsLimite: 5, points: 10 },
