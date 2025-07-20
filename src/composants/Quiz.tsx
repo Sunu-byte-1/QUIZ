@@ -49,21 +49,30 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
 
   // Timer pour chaque question
   useEffect(() => {
-    if (!timerActif || afficherReponse) return;
+    if (!timerActif || afficherReponse || aRepondu) return;
 
     const timer = setInterval(() => {
       setTempsRestant((prev) => {
         if (prev <= 1) {
-          // Temps écoulé, passer automatiquement à la question suivante
-          gererValidation();
-          return 30;
+          // Temps écoulé, marquer comme mauvaise réponse et passer à la suivante
+          setARepondu(true);
+          setAfficherReponse(true);
+          setTimerActif(false);
+          setReponseSelectionnee(null); // Aucune réponse sélectionnée
+          
+          // Passer à la question suivante après 2 secondes
+          setTimeout(() => {
+            questionSuivante();
+          }, 2000);
+          
+          return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [questionActuelle, timerActif, afficherReponse]);
+  }, [questionActuelle, timerActif, afficherReponse, aRepondu]);
 
   // Réinitialiser le timer à chaque nouvelle question
   useEffect(() => {
@@ -106,7 +115,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
       setAfficherReponse(false);
     } else {
       // Quiz terminé
-      const scoreTotal = reponseSelectionnee === questionsMelangees[questionActuelle].bonneReponse ? bonnesReponses + 1 : bonnesReponses;
+      const scoreTotal = bonnesReponses;
       surFinQuiz(scoreTotal, questionsMelangees.length);
     }
   };
@@ -118,7 +127,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
 
     if (index === questionsMelangees[questionActuelle].bonneReponse) {
       return 'bg-green-500 text-white';
-    } else if (reponseSelectionnee === index) {
+    } else if (reponseSelectionnee === index && reponseSelectionnee !== null) {
       return 'bg-red-500 text-white';
     } else {
       return 'bg-gray-100 text-gray-500';
@@ -130,7 +139,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
 
     if (index === questionsMelangees[questionActuelle].bonneReponse) {
       return <CheckCircle className="w-5 h-5" />;
-    } else if (reponseSelectionnee === index) {
+    } else if (reponseSelectionnee === index && reponseSelectionnee !== null) {
       return <XCircle className="w-5 h-5" />;
     }
     return null;
@@ -139,10 +148,10 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   // Attendre que les questions soient mélangées
   if (questionsMelangees.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center transition-all duration-500">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600 dark:text-gray-300">Préparation du quiz...</p>
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Préparation du quiz...</p>
         </div>
       </div>
     );
@@ -152,63 +161,63 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col">
+      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
         {/* En-tête */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 transition-colors duration-300">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 transition-colors duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 animate-fade-in">{theme}</h1>
-              <p className="text-gray-600 dark:text-gray-300">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 animate-fade-in">{theme}</h1>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <BasculeurTheme />
-              <div className="flex items-center space-x-2 text-gray-600">
+              <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-300">
                 <Clock className="w-5 h-5" />
-                <span className={`font-bold ${tempsRestant <= 10 ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
+                <span className={`font-bold text-sm sm:text-base ${tempsRestant <= 10 ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
                   {tempsRestant}s
                 </span>
               </div>
               <button
                 onClick={surRetourAccueil}
-                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
               >
                 <Home className="w-4 h-4" />
-                <span>Accueil</span>
+                <span className="hidden sm:inline">Accueil</span>
               </button>
             </div>
           </div>
           
           {/* Barre de progression */}
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 sm:h-3">
             <div 
-              className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+              className="bg-blue-600 h-2 sm:h-3 rounded-full transition-all duration-500"
               style={{ width: `${progressionPourcent}%` }}
             />
           </div>
-          <div className="mt-2 text-center">
-            <span className="text-xl text-gray-700 dark:text-gray-300">{bonnesReponses}</span>
-            <span className="text-gray-500 dark:text-gray-400 ml-2">bonnes réponses</span>
+          <div className="mt-1 sm:mt-2 text-center">
+            <span className="text-lg sm:text-xl text-gray-700 dark:text-gray-300">{bonnesReponses}</span>
+            <span className="text-sm sm:text-base text-gray-500 dark:text-gray-400 ml-2">bonnes réponses</span>
           </div>
         </div>
 
         {/* Question et réponses */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-colors duration-300">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-8 text-center leading-relaxed">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 transition-colors duration-300 flex-1 flex flex-col">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4 sm:mb-6 lg:mb-8 text-center leading-relaxed">
             {question.question}
           </h2>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4 flex-1">
             {question.reponses.map((reponse, index) => (
               <button
                 key={index}
                 onClick={() => gererSelectionReponse(index)}
                 disabled={aRepondu}
-                className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
+                className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
                   aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transform hover:scale-[1.02]'
                 }`}
               >
-                <span className="text-lg">{reponse}</span>
+                <span className="text-sm sm:text-base lg:text-lg">{reponse}</span>
                 {obtenirIconeReponse(index)}
               </button>
             ))}
@@ -218,14 +227,20 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
 
           {/* Message de feedback */}
           {afficherReponse && (
-            <div className="mt-6 text-center">
-              {reponseSelectionnee === question.bonneReponse ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-green-700 font-semibold">Excellente réponse !</p>
+            <div className="mt-4 sm:mt-6 text-center">
+              {reponseSelectionnee === question.bonneReponse && reponseSelectionnee !== null ? (
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4">
+                  <p className="text-green-700 dark:text-green-300 font-semibold text-sm sm:text-base">Excellente réponse !</p>
+                </div>
+              ) : reponseSelectionnee === null ? (
+                <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3 sm:p-4">
+                  <p className="text-orange-700 dark:text-orange-300 font-semibold text-sm sm:text-base">
+                    Temps écoulé ! La bonne réponse était : {question.reponses[question.bonneReponse]}
+                  </p>
                 </div>
               ) : (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 font-semibold">
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
+                  <p className="text-red-700 dark:text-red-300 font-semibold text-sm sm:text-base">
                     Réponse incorrecte. La bonne réponse était : {question.reponses[question.bonneReponse]}
                   </p>
                 </div>

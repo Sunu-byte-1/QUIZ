@@ -10,12 +10,15 @@ interface ContexteTheme {
 const ContexteTheme = createContext<ContexteTheme | undefined>(undefined);
 
 export const FournisseurTheme: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('clair');
+  const [theme, setTheme] = useState<Theme>('sombre');
 
   useEffect(() => {
     const themeStocke = localStorage.getItem('theme-quiz') as Theme;
     if (themeStocke) {
       setTheme(themeStocke);
+    } else {
+      // Définir le thème sombre par défaut si aucun thème n'est stocké
+      setTheme('sombre');
     }
   }, []);
 
