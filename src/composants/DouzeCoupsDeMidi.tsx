@@ -6,7 +6,7 @@ interface PropsDouzeCoupsDeMidi {
   surRetour: () => void;
 }
 
-const DUREE_JEU = 300; // 5 minutes en secondes
+const DUREE_JEU = 120; // 5 minutes en secondes
 const DUREE_PASSAGE = 120; // 2 minutes max pour "passer" (optionnel, voir logique)
 const NB_QUESTIONS = 100; // On pioche dans un grand nombre
 
