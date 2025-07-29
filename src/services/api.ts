@@ -1,6 +1,5 @@
-// Configuration de l'URL de l'API - Forcer l'utilisation du backend déployé
-const API_BASE_URL = 'https://quiz-zoxq.onrender.com/api';  // Backend déployé sur Render
-// Alternative Railway: 'https://quiz-backend-production.up.railway.app/api'
+// Configuration de l'URL de l'API - Backend déployé sur Render
+const API_BASE_URL = 'https://quiz-zoxq.onrender.com/api';
 
 export interface LoginResponse {
   token: string;

@@ -1,61 +1,50 @@
-// Types pour l'application de quiz
 export interface Question {
   id: number;
   question: string;
   reponses: string[];
-  bonneReponse: number; // Index de la bonne réponse (0-3)
+  bonneReponse: number;
+  explication?: string;
   theme: string;
-  difficulte?: 'facile' | 'moyen' | 'difficile';
-  rubrique?: 'canonnade' | 'eclair' | 'relais' | 'identification' | 'normale';
-  points?: number; // Score attribué à la question (optionnel)
+  difficulte: 'facile' | 'moyen' | 'difficile';
 }
-
-export interface ScoreQuiz {
-  bonnesReponses: number;
-  totalQuestions: number;
-  theme: string;
-  date: string;
-  mode: string;
-  temps?: number;
-}
-
-export type EtatJeu = 'connexion' | 'selectionMode' | 'selectionTheme' | 'quiz' | 'resultats' | 'genieEnHerbe' | 'douzeCoupsDeMidi';
 
 export interface UtilisateurConnecte {
   identifiant: string;
-  connecte: boolean;
   prenom?: string;
   nom?: string;
   pays?: string;
   age?: number;
 }
 
-export type ModeJeu =
-  | 'theme'
-  | 'aleatoire'
-  | 'genieEnHerbe'
-  | 'challenge100'
-  | 'douzeCoupsDeMidi';
+export interface ReponseUtilisateur {
+  questionId: number;
+  reponseChoisie: number;
+  estCorrecte: boolean;
+  tempsReponse: number;
+}
+
+export interface StatistiquesPartie {
+  score: number;
+  totalQuestions: number;
+  bonnesReponses: number;
+  tempsTotal: number;
+  reponses: ReponseUtilisateur[];
+}
+
+export type EtatJeu = 
+  | 'connexion'
+  | 'selectionMode'
+  | 'selectionTheme'
+  | 'selectionThemeEtendue'
+  | 'quiz'
+  | 'resultats'
+  | 'resultatsEtendus'
+  | 'douzeCoupsDeMidi'
+  | 'genieEnHerbe';
 
 export interface ConfigurationQuiz {
-  mode: ModeJeu;
+  mode: 'classique' | 'douzeCoupsDeMidi' | 'genieEnHerbe';
   theme?: string;
   nombreQuestions: number;
-  rubrique?: string;
-  niveau?: 'facile' | 'moyen' | 'difficile' | 'mixte';
-}
-
-export interface QuestionGenieEnHerbe extends Question {
-  rubrique: 'canonnade' | 'eclair' | 'relais' | 'identification';
-  tempsLimite: number; // en secondes
-  points: number;
-  indices?: string[]; // Pour les questions d'identification
-}
-
-export interface ScoreGenieEnHerbe {
-  canonnade: number;
-  eclair: number;
-  relais: number;
-  identification: number;
-  total: number;
+  difficulte: 'facile' | 'moyen' | 'difficile' | 'mixte';
 }
