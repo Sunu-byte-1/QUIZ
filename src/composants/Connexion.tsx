@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, LogIn, Mail } from 'lucide-react';
+import { Lock, LogIn, Mail, AlertTriangle } from 'lucide-react';
 import BasculeurTheme from './BasculeurTheme';
 import { apiService } from '../services/api';
 import Inscription from './Inscription';
@@ -22,8 +22,8 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
 
     try {
       // Mode connexion uniquement
-      const response = await apiService.login({ email, password: motDePasse });
-      surConnexion(response.email);
+      const response = await apiService.login(email, motDePasse);
+      surConnexion(response.user.email);
     } catch (error) {
       if (error instanceof Error) {
         setErreur(error.message);
@@ -85,6 +85,24 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
       <div className="absolute top-4 right-4">
         <BasculeurTheme />
       </div>
+      
+      {/* Avertissement de maintenance */}
+      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg p-3 sm:p-4 shadow-lg max-w-md mx-2">
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+                ⚠️ Maintenance en cours
+              </h3>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                Des problèmes de connexion peuvent survenir. Nous travaillons pour résoudre ces problèmes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-md mx-2 transition-colors duration-300">
         <div className="text-center mb-8">
           <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
