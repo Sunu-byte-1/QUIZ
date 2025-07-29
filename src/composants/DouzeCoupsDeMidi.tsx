@@ -68,7 +68,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
 
   if (tempsRestant <= 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 to-pink-100">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 gsap-midi-entrance">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-xl text-center">
           <h1 className="text-4xl font-bold text-purple-700 mb-4">Fin du jeu !</h1>
           <div className="text-2xl mb-6">Votre score : <span className="font-bold text-green-600">{score}</span></div>
@@ -83,7 +83,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const question = questions[questionActuelle];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-pink-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 p-4 gsap-midi-entrance">
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <button onClick={surRetour} className="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors">

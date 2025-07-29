@@ -95,8 +95,9 @@ const ResultatsEtendus: React.FC<PropsResultatsEtendus> = ({
   }, [score, totalQuestions, scoreGenieEnHerbe, theme, mode, pourcentage, pourcentageGenieEnHerbe, temps]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl transition-colors duration-300 mx-2">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-green-100 p-2 sm:p-4 flex items-center justify-center transition-all duration-500 overflow-x-hidden gsap-resultats-entrance">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl transition-colors duration-300 mx-2 px-2 sm:px-4">
+        <div id="lottie-victory" className="w-full flex justify-center mb-4"></div>
         <div className="absolute top-4 right-4">
           <BasculeurTheme />
         </div>

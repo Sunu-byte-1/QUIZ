@@ -161,8 +161,8 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col">
-      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 p-2 sm:p-4 transition-all duration-500 flex flex-col overflow-x-hidden gsap-quiz-entrance">
+      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col px-2 sm:px-4">
         {/* En-tête */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 transition-colors duration-300">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">

@@ -26,13 +26,19 @@ export interface UtilisateurConnecte {
   connecte: boolean;
 }
 
-export type ModeJeu = 'theme' | 'aleatoire' | 'genieEnHerbe' | 'challenge100';
+export type ModeJeu =
+  | 'theme'
+  | 'aleatoire'
+  | 'genieEnHerbe'
+  | 'challenge100'
+  | 'douzeCoupsDeMidi';
 
 export interface ConfigurationQuiz {
   mode: ModeJeu;
   theme?: string;
   nombreQuestions: number;
   rubrique?: string;
+  niveau?: 'facile' | 'moyen' | 'difficile' | 'mixte';
 }
 
 export interface QuestionGenieEnHerbe extends Question {

@@ -17,13 +17,15 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
 }) => {
   const [themeSelectionne, setThemeSelectionne] = useState<string>('');
   const [nombreQuestions, setNombreQuestions] = useState<number>(20);
+  const [niveau, setNiveau] = useState<'facile' | 'moyen' | 'difficile' | 'mixte'>('mixte');
 
   // Démarrer immédiatement quand un thème est sélectionné
   const gererSelectionTheme = (theme: string) => {
     const config: ConfigurationQuiz = {
       mode: modeSelectionne,
       theme: theme,
-      nombreQuestions
+      nombreQuestions,
+      niveau
     };
     surConfigurationQuiz(config);
   };
@@ -33,7 +35,8 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
     const config: ConfigurationQuiz = {
       mode: modeSelectionne,
       theme: undefined,
-      nombreQuestions
+      nombreQuestions,
+      niveau
     };
     surConfigurationQuiz(config);
   };
@@ -56,18 +59,18 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
 
   // Couleurs pour chaque thème
   const couleursPourTheme: Record<string, string> = {
-    'Mathématiques': 'bg-blue-500',
-    'Physique': 'bg-purple-500',
-    'Chimie': 'bg-green-500',
-    'Histoire': 'bg-yellow-500',
-    'Biologie': 'bg-emerald-500',
-    'Médecine': 'bg-red-500',
-    'Informatique': 'bg-indigo-500',
-    'Data Science': 'bg-cyan-500',
-    'Développement logiciel': 'bg-violet-500',
-    'Mobile': 'bg-pink-500',
-    'Astronomie': 'bg-amber-500',
-    'Géographie': 'bg-teal-500'
+    'Mathématiques': 'bg-sky-400',
+    'Physique': 'bg-indigo-400',
+    'Chimie': 'bg-green-400',
+    'Histoire': 'bg-yellow-400',
+    'Biologie': 'bg-emerald-400',
+    'Médecine': 'bg-rose-400',
+    'Informatique': 'bg-cyan-400',
+    'Data Science': 'bg-teal-400',
+    'Développement logiciel': 'bg-violet-400',
+    'Mobile': 'bg-pink-400',
+    'Astronomie': 'bg-blue-300',
+    'Géographie': 'bg-lime-400'
   };
 
   const optionsNombreQuestions = [15, 20, 30];
@@ -76,7 +79,8 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
     const config: ConfigurationQuiz = {
       mode: modeSelectionne,
       theme: modeSelectionne === 'theme' ? themeSelectionne : undefined,
-      nombreQuestions
+      nombreQuestions,
+      niveau
     };
     surConfigurationQuiz(config);
   };
@@ -84,8 +88,8 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
   const peutDemarrer = modeSelectionne === 'aleatoire' || (modeSelectionne === 'theme' && themeSelectionne);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-all duration-500">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-green-100 to-yellow-100 p-2 sm:p-4 flex flex-col items-center justify-center transition-all duration-500 overflow-x-hidden gsap-theme-entrance">
+      <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
         {/* En-tête */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
           <div className="flex items-center justify-between">
@@ -116,18 +120,38 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
         {/* Sélection du nombre de questions */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Nombre de questions</h2>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
             {optionsNombreQuestions.map((nombre) => (
               <button
                 key={nombre}
                 onClick={() => setNombreQuestions(nombre)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
                   nombreQuestions === nombre
                     ? 'bg-blue-600 text-white shadow-lg'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {nombre} questions
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sélection du niveau de difficulté */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Niveau de difficulté</h2>
+          <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
+            {['facile', 'moyen', 'difficile', 'mixte'].map((niv) => (
+              <button
+                key={niv}
+                onClick={() => setNiveau(niv as any)}
+                className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
+                  niveau === niv
+                    ? 'bg-green-600 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {niv.charAt(0).toUpperCase() + niv.slice(1)}
               </button>
             ))}
           </div>

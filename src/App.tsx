@@ -8,6 +8,7 @@ import SelectionThemeEtendue from './composants/SelectionThemeEtendue';
 import Quiz from './composants/Quiz';
 import GenieEnHerbe from './composants/GenieEnHerbe';
 import ResultatsEtendus from './composants/ResultatsEtendus';
+import DouzeCoupsDeMidi from './composants/DouzeCoupsDeMidi';
 
 function App() {
   // État principal de l'application
@@ -16,8 +17,7 @@ function App() {
     identifiant: '',
     connecte: false
   });
-  
-  // État du quiz
+
   const [modeJeuActuel, setModeJeuActuel] = useState<ModeJeu>('theme');
   const [questionsActuelles, setQuestionsActuelles] = useState<Question[]>([]);
   const [themeActuel, setThemeActuel] = useState<string>('');
@@ -35,7 +35,7 @@ function App() {
     setEtatJeu('selectionMode');
   };
 
-  //dec 
+
   const gererDeconnexion = () => {
     setUtilisateur({
       identifiant: '',
@@ -64,6 +64,9 @@ function App() {
       setQuestionsActuelles(questions);
       setThemeActuel('Challenge 100 Questions');
       setEtatJeu('quiz');
+    } else if (mode === 'douzeCoupsDeMidi') {
+      setEtatJeu('douzeCoupsDeMidi');
+      setThemeActuel('Les 12 Coups de Midi');
     } else {
       setEtatJeu('selectionTheme');
     }
@@ -74,14 +77,28 @@ function App() {
     let questions: Question[] = [];
     
     if (config.mode === 'theme' && config.theme) {
-      questions = obtenirQuestionsParTheme(config.theme, config.nombreQuestions);
+      // Sélection par niveau
+      if (config.niveau && config.niveau !== 'mixte') {
+        const toutes = obtenirQuestionsParTheme(config.theme, 1000);
+        questions = toutes.filter(q => q.difficulte === config.niveau).sort(() => Math.random() - 0.5).slice(0, config.nombreQuestions);
+      } else {
+        questions = obtenirQuestionsParTheme(config.theme, config.nombreQuestions);
+      }
       setThemeActuel(config.theme);
     } else if (config.mode === 'aleatoire') {
-      questions = obtenirQuestionsAleatoires(config.nombreQuestions);
+      if (config.niveau && config.niveau !== 'mixte') {
+        // Sélectionne toutes les questions du niveau demandé
+        const toutes = [];
+        Object.values(require('./donnees/questionsEtendues').questionsParTheme).forEach((qs: any) => {
+          toutes.push(...qs.filter((q: any) => q.difficulte === config.niveau));
+        });
+        questions = toutes.sort(() => Math.random() - 0.5).slice(0, config.nombreQuestions);
+      } else {
+        questions = obtenirQuestionsAleatoires(config.nombreQuestions);
+      }
       setThemeActuel('Quiz Aléatoire');
     }
     // Mettre à jour l'état du jeu
-    
     setQuestionsActuelles(questions);
     setEtatJeu('quiz');
   };
@@ -168,6 +185,13 @@ function App() {
           <GenieEnHerbe
             surFinJeu={terminerGenieEnHerbe}
             surRetourAccueil={retournerAccueil}
+          />
+        );
+      
+      case 'douzeCoupsDeMidi':
+        return (
+          <DouzeCoupsDeMidi
+            surRetour={retournerAccueil}
           />
         );
       

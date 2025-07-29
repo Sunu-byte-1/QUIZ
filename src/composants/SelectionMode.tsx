@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Shuffle, Trophy, Target, BookOpen, Zap } from 'lucide-react';
+import { Play, Shuffle, Trophy, Target, BookOpen, Zap, Clock } from 'lucide-react';
 import BasculeurTheme from './BasculeurTheme';
 import { ModeJeu } from '../types';
 
@@ -47,12 +47,20 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
       icone: <Target className="w-12 h-12" />,
       couleur: 'from-red-500 to-red-600',
       couleurHover: 'from-red-600 to-red-700'
+    },
+    {
+      id: 'douzeCoupsDeMidi' as ModeJeu,
+      titre: 'Les 12 Coups de Midi',
+      description: 'Répondez à un maximum de questions en un temps limité, comme à la TV !',
+      icone: <Clock className="w-12 h-12" />,
+      couleur: 'from-yellow-400 to-pink-400',
+      couleurHover: 'from-yellow-500 to-pink-500'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-pink-200 to-blue-200 p-2 sm:p-4 flex flex-col items-center justify-center transition-all duration-500 overflow-x-hidden">
+      <div className="w-full max-w-2xl mx-auto px-2 sm:px-4 gsap-menu-entrance">
         {/* En-tête */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-8 transition-colors duration-300">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
@@ -78,7 +86,7 @@ const SelectionMode: React.FC<PropsSelectionMode> = ({
             <button
               key={mode.id}
               onClick={() => surSelectionMode(mode.id)}
-              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-3 sm:p-4 lg:p-6 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group animate-slide-up`}
+              className={`bg-gradient-to-r ${mode.couleur} hover:${mode.couleurHover} text-white p-3 sm:p-4 lg:p-6 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group animate-slide-up focus:outline-none focus:ring-4 focus:ring-pink-200`}
             >
               <div className="text-center">
                 <div className="flex justify-center mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
