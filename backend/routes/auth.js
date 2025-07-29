@@ -104,24 +104,37 @@ router.post('/register', async (req, res) => {
 // Connexion
 router.post('/login', async (req, res) => {
   try {
+    console.log('🔍 Debug connexion - req.body:', req.body);
+    console.log('🔍 Debug connexion - Content-Type:', req.headers['content-type']);
+    
     const { email, password } = req.body;
+
+    console.log('🔍 Debug connexion - email:', email);
+    console.log('🔍 Debug connexion - password:', password ? '***' : 'undefined');
 
     // Validation
     if (!email || !password) {
+      console.log('❌ Validation échouée - email:', !!email, 'password:', !!password);
       return res.status(400).json({ message: 'Email et mot de passe requis' });
     }
 
     // Trouver l'utilisateur
     const utilisateur = await User.findOne({ email });
     if (!utilisateur) {
+      console.log('❌ Utilisateur non trouvé:', email);
       return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
     }
+
+    console.log('✅ Utilisateur trouvé:', utilisateur.email);
 
     // Vérifier le mot de passe
     const motDePasseValide = await bcrypt.compare(password, utilisateur.password);
     if (!motDePasseValide) {
+      console.log('❌ Mot de passe incorrect pour:', email);
       return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
     }
+
+    console.log('✅ Mot de passe correct pour:', email);
 
     // Mettre à jour la dernière connexion
     utilisateur.derniereConnexion = new Date();
@@ -138,6 +151,8 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('✅ Connexion réussie pour:', email);
+
     res.json({
       message: 'Connexion réussie',
       token,
@@ -152,7 +167,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Erreur connexion:', error);
+    console.error('❌ Erreur connexion:', error);
     res.status(500).json({ message: 'Erreur lors de la connexion' });
   }
 });

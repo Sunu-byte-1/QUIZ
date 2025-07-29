@@ -1,10 +1,7 @@
-// Configuration de l'URL de l'API - Basculement automatique local/déployé
-const isDevelopment = import.meta.env.DEV;
-const API_BASE_URL = isDevelopment 
-  ? 'http://localhost:5000/api' 
-  : 'https://quiz-zoxq.onrender.com/api';
+// Configuration de l'URL de l'API - Forcer le backend déployé
+const API_BASE_URL = 'https://quiz-zoxq.onrender.com/api';
 
-console.log('🌐 API URL:', API_BASE_URL, isDevelopment ? '(LOCAL)' : '(DEPLOYED)');
+console.log('🌐 API URL:', API_BASE_URL, '(DEPLOYED)');
 
 export interface LoginResponse {
   token: string;
