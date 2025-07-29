@@ -23,7 +23,7 @@ const creerAdminParDefaut = async () => {
       });
       console.log('✅ Admin par défaut créé: abdallahdiouf.dev@gmail.com / Khoudia1970admin');
     } else {
-      console.log('✅ Admin existe déjà');
+      console.log('✅ Admin existe déjà dans la base de données');
     }
   } catch (error) {
     console.error('❌ Erreur création admin:', error);

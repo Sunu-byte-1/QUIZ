@@ -70,7 +70,7 @@ function App() {
       nom: undefined,
       pays: undefined,
       age: undefined,
-      role: role || 'user'
+      role: (role as 'user' | 'admin' | undefined) || 'user'
     });
     setEtatJeu('selectionMode');
   };
@@ -307,7 +307,7 @@ function App() {
   if (afficherAdmin) {
     return (
       <AdminDashboard
-        surRetour={() => setAfficherAdmin(false)}
+        onRetour={() => setAfficherAdmin(false)}
       />
     );
   }

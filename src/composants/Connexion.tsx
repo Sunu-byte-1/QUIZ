@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, LogIn, Mail, AlertTriangle } from 'lucide-react';
+import { Lock, LogIn, Mail, AlertTriangle, Heart, X } from 'lucide-react';
 import BasculeurTheme from './BasculeurTheme';
 import { apiService } from '../services/api';
 import Inscription from './Inscription';
@@ -14,6 +14,7 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
   const [erreur, setErreur] = useState('');
   const [chargement, setChargement] = useState(false);
   const [modeInscription, setModeInscription] = useState(false);
+  const [showWarning, setShowWarning] = useState(true);
 
   const gererSoumission = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
     setErreur('');
 
     try {
-      // Mode connexion uniquement
+      // Connexion via API (admin inclus)
       const response = await apiService.login(email, motDePasse);
       surConnexion(response.user.email);
     } catch (error) {
@@ -86,22 +87,52 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
         <BasculeurTheme />
       </div>
       
-      {/* Avertissement de maintenance */}
-      <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg p-3 sm:p-4 shadow-lg max-w-md mx-2">
-          <div className="flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
-                ⚠️ Maintenance en cours
-              </h3>
-              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                Des problèmes de connexion peuvent survenir. Nous travaillons pour résoudre ces problèmes.
-              </p>
+      {/* Popup d'avertissement - affiché une seule fois */}
+      {showWarning && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 relative animate-in fade-in duration-300">
+            {/* Bouton fermer */}
+            <button
+              onClick={() => setShowWarning(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Contenu du popup */}
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-2 mb-4">
+                <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  ⚠️ Maintenance en cours
+                </h3>
+              </div>
+
+              <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                <p>Des problèmes de connexion peuvent survenir.</p>
+                <p>Nos excuses pour les désagréments.</p>
+              </div>
+
+              {/* Signature SUNU-BYTE */}
+              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-center space-x-2">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    SUNU-BYTE by Abdallah
+                  </span>
+                </div>
+              </div>
+
+              {/* Bouton fermer en bas */}
+              <button
+                onClick={() => setShowWarning(false)}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+              >
+                Compris
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-md mx-2 transition-colors duration-300">
         <div className="text-center mb-8">
@@ -151,9 +182,13 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
             </div>
           </div>
 
+          {/* Message d'erreur dans le formulaire */}
           {erreur && (
             <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3">
-              <p className="text-red-700 dark:text-red-300 text-sm">{erreur}</p>
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                <p className="text-red-700 dark:text-red-300 text-sm">{erreur}</p>
+              </div>
             </div>
           )}
 
