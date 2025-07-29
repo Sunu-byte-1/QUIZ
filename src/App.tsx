@@ -11,6 +11,7 @@ import GenieEnHerbe from './composants/GenieEnHerbe';
 import ResultatsEtendus from './composants/ResultatsEtendus';
 import DouzeCoupsDeMidi from './composants/DouzeCoupsDeMidi';
 import ProfilUtilisateur from './composants/ProfilUtilisateur';
+import AdminDashboard from './composants/AdminDashboard';
 import { apiService } from './services/api';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
     connecte: false
   });
   const [chargementInitial, setChargementInitial] = useState(true);
+  const [afficherAdmin, setAfficherAdmin] = useState(false);
 
   // Vérifier l'authentification au démarrage
   React.useEffect(() => {
@@ -34,7 +36,8 @@ function App() {
             prenom: userData.prenom,
             nom: userData.nom,
             pays: userData.pays,
-            age: userData.age
+            age: userData.age,
+            role: userData.role
           });
           setEtatJeu('selectionMode');
         }
@@ -59,14 +62,15 @@ function App() {
   const [afficherProfil, setAfficherProfil] = useState(false);
 
   // Gestion de la connexion
-  const gererConnexion = (email: string) => {
+  const gererConnexion = (email: string, role?: string) => {
     setUtilisateur({
       identifiant: email,
       connecte: true,
       prenom: undefined,
       nom: undefined,
       pays: undefined,
-      age: undefined
+      age: undefined,
+      role: role || 'user'
     });
     setEtatJeu('selectionMode');
   };
@@ -80,6 +84,7 @@ function App() {
       connecte: false
     });
     setEtatJeu('connexion');
+    setAfficherAdmin(false);
     // Réinitialiser les données du quiz
     setModeJeuActuel('theme');
     setQuestionsActuelles([]);
@@ -227,6 +232,7 @@ function App() {
             utilisateur={utilisateur}
             surDeconnexion={gererDeconnexion}
             surProfil={() => setAfficherProfil(true)}
+            surAdmin={() => setAfficherAdmin(true)}
           />
         );
       
@@ -293,6 +299,15 @@ function App() {
           setAfficherProfil(false);
         }}
         surRetour={() => setAfficherProfil(false)}
+      />
+    );
+  }
+
+  // Afficher le dashboard admin si demandé
+  if (afficherAdmin) {
+    return (
+      <AdminDashboard
+        surRetour={() => setAfficherAdmin(false)}
       />
     );
   }

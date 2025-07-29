@@ -6,14 +6,17 @@ export interface Question {
   explication?: string;
   theme: string;
   difficulte: 'facile' | 'moyen' | 'difficile';
+  points: number;
 }
 
 export interface UtilisateurConnecte {
   identifiant: string;
+  connecte: boolean;
   prenom?: string;
   nom?: string;
   pays?: string;
   age?: number;
+  role?: 'user' | 'admin';
 }
 
 export interface ReponseUtilisateur {
@@ -32,19 +35,58 @@ export interface StatistiquesPartie {
 }
 
 export type EtatJeu = 
-  | 'connexion'
-  | 'selectionMode'
-  | 'selectionTheme'
-  | 'selectionThemeEtendue'
-  | 'quiz'
-  | 'resultats'
-  | 'resultatsEtendus'
-  | 'douzeCoupsDeMidi'
-  | 'genieEnHerbe';
+  | 'connexion' 
+  | 'selectionMode' 
+  | 'selectionTheme' 
+  | 'quiz' 
+  | 'resultats' 
+  | 'genieEnHerbe' 
+  | 'douzeCoupsDeMidi';
+
+export type ModeJeu = 'theme' | 'aleatoire' | 'genieEnHerbe' | 'challenge100' | 'douzeCoupsDeMidi';
 
 export interface ConfigurationQuiz {
-  mode: 'classique' | 'douzeCoupsDeMidi' | 'genieEnHerbe';
+  mode: 'theme' | 'aleatoire';
   theme?: string;
   nombreQuestions: number;
-  difficulte: 'facile' | 'moyen' | 'difficile' | 'mixte';
+  niveau?: 'facile' | 'moyen' | 'difficile' | 'mixte';
+}
+
+export interface ScoreGenieEnHerbe {
+  score: number;
+  temps: number;
+  questionsRepondues: number;
+  precision: number;
+}
+
+export interface StatistiquesUtilisateur {
+  partiesJouees: number;
+  scoreTotal: number;
+  meilleurScore: number;
+  tempsTotal: number;
+  precisionMoyenne: number;
+  themesPrefere: string[];
+  progression: {
+    date: string;
+    score: number;
+  }[];
+}
+
+export interface ObjectifUtilisateur {
+  id: string;
+  titre: string;
+  description: string;
+  type: 'score' | 'parties' | 'temps' | 'precision';
+  valeurCible: number;
+  valeurActuelle: number;
+  atteint: boolean;
+  recompense?: string;
+}
+
+export interface Recommandation {
+  type: 'theme' | 'difficulte' | 'pratique' | 'objectif';
+  titre: string;
+  description: string;
+  priorite: 'basse' | 'moyenne' | 'haute';
+  action?: string;
 }

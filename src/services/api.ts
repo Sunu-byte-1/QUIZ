@@ -1,5 +1,10 @@
-// Configuration de l'URL de l'API - Backend déployé sur Render
-const API_BASE_URL = 'https://quiz-zoxq.onrender.com/api';
+// Configuration de l'URL de l'API - Basculement automatique local/déployé
+const isDevelopment = import.meta.env.DEV;
+const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:5000/api' 
+  : 'https://quiz-zoxq.onrender.com/api';
+
+console.log('🌐 API URL:', API_BASE_URL, isDevelopment ? '(LOCAL)' : '(DEPLOYED)');
 
 export interface LoginResponse {
   token: string;
@@ -27,98 +32,153 @@ export interface LoginRequest {
 class ApiService {
   private token: string | null = null;
 
-  setToken(token: string) {
-    this.token = token;
-    localStorage.setItem('token', token);
+  // Méthodes d'authentification
+  async register(userData: {
+    email: string;
+    password: string;
+    prenom: string;
+    nom: string;
+    pays: string;
+    age: number;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de l\'inscription');
+    }
+
+    const data = await response.json();
+    this.token = data.token;
+    localStorage.setItem('token', data.token);
+    return data;
+  }
+
+  async login(email: string, password: string) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la connexion');
+    }
+
+    const data = await response.json();
+    this.token = data.token;
+    localStorage.setItem('token', data.token);
+    return data;
+  }
+
+  async checkAuth() {
+    if (!this.token) {
+      throw new Error('Non authentifié');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Token invalide');
+    }
+
+    return await response.json();
+  }
+
+  // Méthodes admin
+  async getUsers() {
+    if (!this.token) {
+      throw new Error('Non authentifié');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/users`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la récupération des utilisateurs');
+    }
+
+    return await response.json();
+  }
+
+  async getStats() {
+    if (!this.token) {
+      throw new Error('Non authentifié');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/stats`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la récupération des statistiques');
+    }
+
+    return await response.json();
+  }
+
+  // Méthode générique pour les requêtes GET
+  async get(endpoint: string) {
+    if (!this.token) {
+      throw new Error('Non authentifié');
+    }
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la requête');
+    }
+
+    return await response.json();
+  }
+
+  // Méthodes utilitaires
+  isAuthenticated(): boolean {
+    return !!this.token;
   }
 
   getToken(): string | null {
-    if (!this.token) {
-      this.token = localStorage.getItem('token');
-    }
     return this.token;
   }
 
-  clearToken() {
+  clearToken(): void {
     this.token = null;
     localStorage.removeItem('token');
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    // Ajouter le token d'authentification si disponible
-    const token = this.getToken();
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
+  // Initialiser le token depuis localStorage
+  init() {
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      this.token = savedToken;
     }
-
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Erreur réseau' }));
-        throw new Error(errorData.message || `Erreur ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Erreur réseau');
-    }
-  }
-
-  // Inscription
-  async register(data: RegisterRequest): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  // Connexion
-  async login(data: LoginRequest): Promise<LoginResponse> {
-    const response = await this.request<LoginResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    
-    if (response.token) {
-      this.setToken(response.token);
-    }
-    
-    return response;
-  }
-
-  // Récupérer la liste des utilisateurs (pour debug)
-  async getUsers(): Promise<{ email: string }[]> {
-    return this.request<{ email: string }[]>('/auth/users');
-  }
-
-  // Vérifier l'authentification avec le serveur
-  async checkAuth(): Promise<{ email: string; prenom?: string; nom?: string; pays?: string; age?: number }> {
-    return this.request<{ email: string; prenom?: string; nom?: string; pays?: string; age?: number }>('/auth/me');
-  }
-
-  // Vérifier si l'utilisateur est connecté
-  isAuthenticated(): boolean {
-    return !!this.getToken();
   }
 }
 
-export const apiService = new ApiService(); 
+export const apiService = new ApiService();
+apiService.init(); 
