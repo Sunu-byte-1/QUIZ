@@ -22,9 +22,11 @@ const creerAdminParDefaut = async () => {
         role: 'admin'
       });
       console.log('✅ Admin par défaut créé: abdallahdiouf.dev@gmail.com / Khoudia1970admin');
+    } else {
+      console.log('✅ Admin existe déjà');
     }
   } catch (error) {
-    console.error('Erreur création admin:', error);
+    console.error('❌ Erreur création admin:', error);
   }
 };
 
@@ -34,10 +36,13 @@ creerAdminParDefaut();
 // Inscription
 router.post('/register', async (req, res) => {
   try {
+    console.log('📝 Tentative d\'inscription:', { email: req.body.email, prenom: req.body.prenom });
+    
     const { email, password, prenom, nom, pays, age } = req.body;
 
-    // Validation
+    // Validation stricte
     if (!email || !password || !prenom || !nom || !pays || !age) {
+      console.log('❌ Validation échouée - champs manquants');
       return res.status(400).json({ message: 'Tous les champs sont requis' });
     }
 
@@ -52,6 +57,7 @@ router.post('/register', async (req, res) => {
     // Vérifier si l'utilisateur existe déjà
     const utilisateurExistant = await User.findOne({ email });
     if (utilisateurExistant) {
+      console.log('❌ Email déjà utilisé:', email);
       return res.status(400).json({ message: 'Cet email est déjà utilisé' });
     }
 
@@ -82,6 +88,8 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('✅ Inscription réussie:', email);
+
     res.status(201).json({
       message: 'Utilisateur créé avec succès',
       token,
@@ -96,7 +104,7 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Erreur inscription:', error);
+    console.error('❌ Erreur inscription:', error);
     res.status(500).json({ message: 'Erreur lors de l\'inscription' });
   }
 });
@@ -104,24 +112,24 @@ router.post('/register', async (req, res) => {
 // Connexion
 router.post('/login', async (req, res) => {
   try {
-    console.log('🔍 Debug connexion - req.body:', req.body);
-    console.log('🔍 Debug connexion - Content-Type:', req.headers['content-type']);
+    console.log('🔐 Tentative de connexion pour:', req.body.email);
+    console.log('📋 Headers:', req.headers['content-type']);
     
     const { email, password } = req.body;
 
-    console.log('🔍 Debug connexion - email:', email);
-    console.log('🔍 Debug connexion - password:', password ? '***' : 'undefined');
-
-    // Validation
+    // Validation stricte
     if (!email || !password) {
       console.log('❌ Validation échouée - email:', !!email, 'password:', !!password);
       return res.status(400).json({ message: 'Email et mot de passe requis' });
     }
 
+    // Nettoyer l'email
+    const emailClean = email.trim().toLowerCase();
+
     // Trouver l'utilisateur
-    const utilisateur = await User.findOne({ email });
+    const utilisateur = await User.findOne({ email: emailClean });
     if (!utilisateur) {
-      console.log('❌ Utilisateur non trouvé:', email);
+      console.log('❌ Utilisateur non trouvé:', emailClean);
       return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
     }
 
@@ -130,11 +138,11 @@ router.post('/login', async (req, res) => {
     // Vérifier le mot de passe
     const motDePasseValide = await bcrypt.compare(password, utilisateur.password);
     if (!motDePasseValide) {
-      console.log('❌ Mot de passe incorrect pour:', email);
+      console.log('❌ Mot de passe incorrect pour:', emailClean);
       return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
     }
 
-    console.log('✅ Mot de passe correct pour:', email);
+    console.log('✅ Mot de passe correct pour:', emailClean);
 
     // Mettre à jour la dernière connexion
     utilisateur.derniereConnexion = new Date();
@@ -151,7 +159,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    console.log('✅ Connexion réussie pour:', email);
+    console.log('✅ Connexion réussie pour:', emailClean);
 
     res.json({
       message: 'Connexion réussie',

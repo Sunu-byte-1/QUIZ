@@ -29,7 +29,7 @@ export interface LoginRequest {
 class ApiService {
   private token: string | null = null;
 
-  // Méthodes d'authentification
+  // Méthodes d'authentification avec retry
   async register(userData: {
     email: string;
     password: string;
@@ -38,43 +38,64 @@ class ApiService {
     pays: string;
     age: number;
   }) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(userData),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de l\'inscription');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de l\'inscription');
+      }
+
+      const data = await response.json();
+      this.token = data.token;
+      localStorage.setItem('token', data.token);
+      return data;
+    } catch (error) {
+      console.error('❌ Erreur inscription:', error);
+      throw error;
     }
-
-    const data = await response.json();
-    this.token = data.token;
-    localStorage.setItem('token', data.token);
-    return data;
   }
 
-  async login(email: string, password: string) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+  async login(email: string, password: string, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔐 Tentative de connexion ${attempt}/${maxRetries}`);
+        
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ email, password }),
+        });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la connexion');
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Erreur lors de la connexion');
+        }
+
+        const data = await response.json();
+        this.token = data.token;
+        localStorage.setItem('token', data.token);
+        console.log('✅ Connexion réussie');
+        return data;
+      } catch (error) {
+        console.error(`❌ Tentative ${attempt} échouée:`, error);
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        // Attendre avant de réessayer
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
     }
-
-    const data = await response.json();
-    this.token = data.token;
-    localStorage.setItem('token', data.token);
-    return data;
   }
 
   async checkAuth() {
@@ -82,17 +103,23 @@ class ApiService {
       throw new Error('Non authentifié');
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error('Token invalide');
+      if (!response.ok) {
+        throw new Error('Token invalide');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('❌ Erreur vérification auth:', error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   // Méthodes admin
@@ -101,18 +128,24 @@ class ApiService {
       throw new Error('Non authentifié');
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/users`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/users`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la récupération des utilisateurs');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la récupération des utilisateurs');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('❌ Erreur récupération utilisateurs:', error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   async getStats() {
@@ -120,18 +153,24 @@ class ApiService {
       throw new Error('Non authentifié');
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/stats`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/stats`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la récupération des statistiques');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la récupération des statistiques');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('❌ Erreur récupération stats:', error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   // Méthode générique pour les requêtes GET
@@ -140,18 +179,24 @@ class ApiService {
       throw new Error('Non authentifié');
     }
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/json'
+        },
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la requête');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la requête');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('❌ Erreur requête GET:', error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   // Méthodes utilitaires

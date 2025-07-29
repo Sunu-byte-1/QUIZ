@@ -2,8 +2,12 @@ services:
   - type: web
     name: quiz-backend
     env: node
+    plan: free
     buildCommand: npm install
     startCommand: npm start
+    rootDir: .
+    healthCheckPath: /
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
@@ -11,10 +15,6 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: PORT
-        value: 10000
-    healthCheckPath: /
-    autoDeploy: true
 
 
   
