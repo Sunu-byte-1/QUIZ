@@ -134,8 +134,8 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
 
   // Formulaire de connexion
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-2 sm:p-4 transition-all duration-500">
-      <div className="absolute top-4 right-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-3 sm:p-4 lg:p-6 transition-all duration-500">
+      <div className="absolute top-4 right-4 z-10">
         <BasculeurTheme />
       </div>
       
@@ -188,35 +188,35 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
         </div>
       )}
 
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 w-full max-w-md mx-2 border border-white/20 dark:border-gray-700/50" ref={containerRef}>
-        <div className="text-center mb-10">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 w-full max-w-md mx-2 border border-white/20 dark:border-gray-700/50" ref={containerRef}>
+        <div className="text-center mb-8 sm:mb-10">
           <div className="relative mb-6">
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
-              <LogIn className="w-10 h-10 text-white" />
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
+              <LogIn className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
             </div>
             <div className="absolute -top-2 -right-2">
-              <Sparkles className="w-6 h-6 text-yellow-500 animate-pulse" />
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
             QUIZZZZZ
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">Connectez-vous pour commencer le quiz</p>
+          <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg">Connectez-vous pour commencer le quiz</p>
         </div>
 
-        <form onSubmit={gererSoumission} className="space-y-6" ref={formRef}>
+        <form onSubmit={gererSoumission} className="space-y-5 sm:space-y-6" ref={formRef}>
           <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
               Email
             </label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+              <Mail className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-base bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm"
                 placeholder="Entrez votre email"
                 required
                 autoComplete="email"
@@ -229,13 +229,13 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
               Mot de passe
             </label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+              <Lock className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
               <input
                 type={showPassword ? "text" : "password"}
                 id="motDePasse"
                 value={motDePasse}
                 onChange={(e) => setMotDePasse(e.target.value)}
-                className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-base bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm"
+                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm"
                 placeholder="Entrez votre mot de passe"
                 required
                 autoComplete="current-password"
@@ -243,9 +243,9 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
             </div>
           </div>
@@ -263,13 +263,13 @@ const Connexion: React.FC<PropsConnexion> = ({ surConnexion }) => {
           <button
             type="submit"
             disabled={chargement}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:transform-none disabled:shadow-none flex items-center justify-center space-x-3 text-lg"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 sm:py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:transform-none disabled:shadow-none flex items-center justify-center space-x-2 sm:space-x-3 text-base sm:text-lg min-h-[44px] sm:min-h-[48px]"
           >
             {chargement ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <LogIn className="w-6 h-6" />
+                <LogIn className="w-5 h-5 sm:w-6 sm:h-6" />
                 <span>Se connecter</span>
               </>
             )}

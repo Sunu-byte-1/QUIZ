@@ -135,39 +135,39 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 overflow-hidden">
       <div className="max-w-6xl mx-auto" ref={containerRef}>
         {/* Header avec animations */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 mb-8 border border-white/20 dark:border-gray-700/50" ref={headerRef}>
-          <div className="flex justify-between items-center">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl p-4 sm:p-8 mb-8 border border-white/20 dark:border-gray-700/50" ref={headerRef}>
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 🎮 Sélection du Mode de Jeu
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 text-lg">
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-lg">
                 Bienvenue <span className="font-semibold text-blue-600 dark:text-blue-400">{utilisateur.prenom || utilisateur.identifiant}</span> ! Choisissez votre mode de jeu
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-end">
               <button
                 onClick={surProfil}
-                className="action-button bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
+                className="action-button bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
               >
-                <User className="w-5 h-5" />
-                <span>Profil</span>
+                <User className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Profil</span>
               </button>
               {utilisateur.role === 'admin' && (
                 <button
                   onClick={surAdmin}
-                  className="action-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
+                  className="action-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
                 >
-                  <Shield className="w-5 h-5" />
-                  <span>Admin</span>
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">Admin</span>
                 </button>
               )}
               <button
                 onClick={surDeconnexion}
-                className="action-button bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
+                className="action-button bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
               >
-                <LogOut className="w-5 h-5" />
-                <span>Déconnexion</span>
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Déconnexion</span>
               </button>
             </div>
           </div>

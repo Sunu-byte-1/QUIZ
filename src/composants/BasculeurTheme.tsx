@@ -8,14 +8,26 @@ const BasculeurTheme: React.FC = () => {
   return (
     <button
       onClick={basculerTheme}
-      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
-      aria-label="Basculer le thème"
+      className="relative inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus-visible-ring"
+      aria-label={`Basculer vers le thème ${theme === 'clair' ? 'sombre' : 'clair'}`}
+      title={`Basculer vers le thème ${theme === 'clair' ? 'sombre' : 'clair'}`}
     >
-      {theme === 'clair' ? (
-        <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-      ) : (
-        <Sun className="w-5 h-5 text-yellow-500" />
-      )}
+      <div className="relative w-5 h-5 sm:w-6 sm:h-6">
+        <Sun 
+          className={`absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 ${
+            theme === 'clair' 
+              ? 'text-yellow-500 opacity-100 rotate-0' 
+              : 'text-gray-400 opacity-0 -rotate-90'
+          }`}
+        />
+        <Moon 
+          className={`absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 ${
+            theme === 'sombre' 
+              ? 'text-blue-400 opacity-100 rotate-0' 
+              : 'text-gray-400 opacity-0 rotate-90'
+          }`}
+        />
+      </div>
     </button>
   );
 };

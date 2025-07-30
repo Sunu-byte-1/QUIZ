@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, SkipForward, Clock, Star, ArrowLeft } from 'lucide-react';
+import BasculeurTheme from './BasculeurTheme';
 import { obtenirQuestionsAleatoires } from '../donnees/questionsEtendues';
 
 interface PropsDouzeCoupsDeMidi {
   surRetour: () => void;
 }
 
-const DUREE_JEU = 120; // 5 minutes en secondes
-const DUREE_PASSAGE = 120; // 2 minutes max pour "passer" (optionnel, voir logique)
+const DUREE_JEU = 500; // 5 minutes en secondes
+const DUREE_PASSAGE = 500; // 2 minutes max pour "passer" (optionnel, voir logique)
 const NB_QUESTIONS = 100; // On pioche dans un grand nombre
 
 const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
@@ -18,7 +19,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const [aRepondu, setARepondu] = useState(false);
   const [reponseSelectionnee, setReponseSelectionnee] = useState<number | null>(null);
   const [afficherReponse, setAfficherReponse] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     setQuestions(obtenirQuestionsAleatoires(NB_QUESTIONS));
@@ -68,11 +69,11 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
 
   if (tempsRestant <= 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 gsap-midi-entrance">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-xl text-center">
-          <h1 className="text-4xl font-bold text-purple-700 mb-4">Fin du jeu !</h1>
-          <div className="text-2xl mb-6">Votre score : <span className="font-bold text-green-600">{score}</span></div>
-          <button onClick={surRetour} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-lg mt-4 flex items-center mx-auto">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 gsap-midi-entrance">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-xl text-center transition-colors duration-300">
+          <h1 className="text-4xl font-bold text-purple-700 dark:text-purple-400 mb-4">Fin du jeu !</h1>
+          <div className="text-2xl mb-6 text-gray-800 dark:text-gray-200">Votre score : <span className="font-bold text-green-600 dark:text-green-400">{score}</span></div>
+          <button onClick={surRetour} className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-lg mt-4 flex items-center mx-auto transition-colors duration-300">
             <ArrowLeft className="w-5 h-5 mr-2" /> Retour
           </button>
         </div>
@@ -83,25 +84,26 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const question = questions[questionActuelle];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 p-4 gsap-midi-entrance">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 gsap-midi-entrance">
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <button onClick={surRetour} className="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg transition-colors">
+          <button onClick={surRetour} className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white p-2 rounded-lg transition-colors duration-300">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center space-x-6">
-            <div className="flex items-center text-xl font-bold text-purple-700">
+            <div className="flex items-center text-xl font-bold text-purple-700 dark:text-purple-400">
               <Clock className="w-6 h-6 mr-2" />
               {minutes}:{secondes.toString().padStart(2, '0')}
             </div>
-            <div className="flex items-center text-xl font-bold text-green-700">
+            <div className="flex items-center text-xl font-bold text-green-700 dark:text-green-400">
               <Star className="w-6 h-6 mr-2" />
               {score}
             </div>
+            <BasculeurTheme />
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{question?.question}</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-6 transition-colors duration-300">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">{question?.question}</h2>
           <div className="space-y-4">
             {question?.reponses.map((reponse: string, index: number) => (
               <button
@@ -111,10 +113,10 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
                 className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${
                   aRepondu && index === question.bonneReponse ? 'bg-green-500 text-white' :
                   aRepondu && reponseSelectionnee === index ? 'bg-red-500 text-white' :
-                  'bg-white hover:bg-gray-50'
-                } ${aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 hover:border-purple-300'}`}
+                  'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                } ${aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500'}`}
               >
-                <span className="text-lg">{reponse}</span>
+                <span className="text-lg text-gray-800 dark:text-gray-200">{reponse}</span>
                 {aRepondu && index === question.bonneReponse && <Star className="w-5 h-5" />}
                 {aRepondu && reponseSelectionnee === index && index !== question.bonneReponse && <SkipForward className="w-5 h-5" />}
               </button>
@@ -124,7 +126,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
             <button
               onClick={passerQuestion}
               disabled={aRepondu || tempsRestant <= 0}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-xl font-bold text-lg flex items-center space-x-2"
+              className="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white px-6 py-3 rounded-xl font-bold text-lg flex items-center space-x-2 transition-colors duration-300"
             >
               <SkipForward className="w-5 h-5" />
               <span>Passer</span>

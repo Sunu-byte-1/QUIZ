@@ -68,19 +68,19 @@ const Inscription: React.FC<PropsInscription> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-2 sm:p-4 transition-all duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-3 sm:p-4 lg:p-6 transition-all duration-500">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-md mx-2 transition-colors duration-300">
-        <div className="text-center mb-8">
-          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <UserCheck className="w-8 h-8 text-blue-600" />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="bg-blue-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <UserCheck className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Créer un compte</h1>
-          <p className="text-gray-600 dark:text-gray-300">Rejoignez notre communauté de quiz</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Créer un compte</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Rejoignez notre communauté de quiz</p>
         </div>
 
         <form onSubmit={gererSoumission} className="space-y-4">
           {/* Prénom et Nom */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="prenom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Prénom
@@ -92,7 +92,7 @@ const Inscription: React.FC<PropsInscription> = ({
                   id="prenom"
                   value={prenom}
                   onChange={(e) => setPrenom(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
+                  className={`w-full pl-10 pr-4 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
                     erreurs.prenom ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                   placeholder="Prénom"
@@ -144,7 +144,7 @@ const Inscription: React.FC<PropsInscription> = ({
           </div>
 
           {/* Pays et Âge */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="pays" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pays
@@ -155,7 +155,7 @@ const Inscription: React.FC<PropsInscription> = ({
                   id="pays"
                   value={pays}
                   onChange={(e) => setPays(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
+                  className={`w-full pl-10 pr-4 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
                     erreurs.pays ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                 >
@@ -183,7 +183,7 @@ const Inscription: React.FC<PropsInscription> = ({
                   onChange={(e) => setAge(e.target.value)}
                   min="5"
                   max="120"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
+                  className={`w-full pl-10 pr-4 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
                     erreurs.age ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                   placeholder="Âge"
@@ -244,7 +244,7 @@ const Inscription: React.FC<PropsInscription> = ({
           <button
             type="submit"
             disabled={chargement}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[44px] sm:min-h-[48px]"
           >
             {chargement ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -161,26 +161,26 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
   const progressionPourcent = ((questionActuelle + 1) / questionsMelangees.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 p-2 sm:p-4 transition-all duration-500 flex flex-col overflow-x-hidden gsap-quiz-entrance">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 p-3 sm:p-4 lg:p-6 transition-all duration-500 flex flex-col overflow-x-hidden gsap-quiz-entrance">
       <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col px-2 sm:px-4">
         {/* En-tête */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 transition-colors duration-300">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
-            <div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 transition-colors duration-300">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 space-y-3 lg:space-y-0">
+            <div className="flex-1">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 animate-fade-in">{theme}</h1>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Question {questionActuelle + 1} sur {questionsMelangees.length}</p>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-wrap">
               <BasculeurTheme />
               <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-300">
-                <Clock className="w-5 h-5" />
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className={`font-bold text-sm sm:text-base ${tempsRestant <= 10 ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
                   {tempsRestant}s
                 </span>
               </div>
               <button
                 onClick={surRetourAccueil}
-                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base"
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 sm:space-x-2 text-sm sm:text-base min-h-[36px] sm:min-h-[40px]"
               >
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">Accueil</span>
@@ -213,7 +213,7 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
                 key={index}
                 onClick={() => gererSelectionReponse(index)}
                 disabled={aRepondu}
-               className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between ${
+               className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all duration-300 text-left flex items-center justify-between min-h-[60px] sm:min-h-[70px] ${
                  !afficherReponse ? (
                    reponseSelectionnee === index 
                      ? 'bg-blue-500 text-white border-blue-500' 
@@ -226,11 +226,13 @@ const Quiz: React.FC<PropsQuiz> = ({ questions, theme, surFinQuiz, surRetourAccu
                        : 'bg-gray-600 text-gray-300 border-gray-500'
                  )
                } ${
-                 aRepondu ? 'cursor-not-allowed' : 'cursor-pointer transform hover:scale-[1.02]'
+                 aRepondu ? 'cursor-not-allowed' : 'cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
-                <span className="text-sm sm:text-base lg:text-lg">{reponse}</span>
-                {obtenirIconeReponse(index)}
+                <span className="text-sm sm:text-base lg:text-lg flex-1 text-left pr-2">{reponse}</span>
+                <div className="flex-shrink-0">
+                  {obtenirIconeReponse(index)}
+                </div>
               </button>
             ))}
           </div>

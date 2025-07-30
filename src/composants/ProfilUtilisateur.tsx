@@ -62,15 +62,15 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-3 sm:p-4 lg:p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 w-full max-w-md mx-2">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Mon Profil</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Mon Profil</h1>
           <button
             onClick={surRetour}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
@@ -87,7 +87,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
           </div>
 
           {/* Prénom et Nom */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Prénom
@@ -97,7 +97,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
                   type="text"
                   value={prenom}
                   onChange={(e) => setPrenom(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
+                  className={`w-full px-3 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
                     erreurs.prenom ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                 />
@@ -119,7 +119,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
                   type="text"
                   value={nom}
                   onChange={(e) => setNom(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
+                  className={`w-full px-3 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
                     erreurs.nom ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                 />
@@ -134,7 +134,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
           </div>
 
           {/* Pays et Âge */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pays
@@ -143,7 +143,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
                 <select
                   value={pays}
                   onChange={(e) => setPays(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
+                  className={`w-full px-3 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
                     erreurs.pays ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                 >
@@ -174,7 +174,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
                   onChange={(e) => setAge(e.target.value)}
                   min="5"
                   max="120"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
+                  className={`w-full px-3 py-2.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
                     erreurs.age ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   } dark:bg-gray-700 dark:text-gray-100`}
                 />
@@ -200,19 +200,19 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
           )}
 
           {/* Boutons d'action */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             {modeEdition ? (
               <>
                 <button
                   onClick={gererSauvegarde}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[44px]"
                 >
                   <Save className="w-4 h-4" />
                   <span>Sauvegarder</span>
                 </button>
                 <button
                   onClick={gererAnnulation}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[44px]"
                 >
                   <X className="w-4 h-4" />
                   <span>Annuler</span>
@@ -221,7 +221,7 @@ const ProfilUtilisateur: React.FC<PropsProfilUtilisateur> = ({
             ) : (
               <button
                 onClick={() => setModeEdition(true)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[44px]"
               >
                 <Edit className="w-4 h-4" />
                 <span>Modifier le profil</span>
