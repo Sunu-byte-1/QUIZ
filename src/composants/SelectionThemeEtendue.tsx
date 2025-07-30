@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, ArrowLeft, Calculator, Atom, Globe, Heart, Computer, Database, Code, Smartphone, Star, MapPin, BookOpen } from 'lucide-react';
 import BasculeurTheme from './BasculeurTheme';
 import { themesDisponibles } from '../donnees/questionsEtendues';
@@ -18,6 +18,14 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
   const [themeSelectionne, setThemeSelectionne] = useState<string>('');
   const [nombreQuestions, setNombreQuestions] = useState<number>(20);
   const [niveau, setNiveau] = useState<'facile' | 'moyen' | 'difficile' | 'mixte'>('mixte');
+  const [afficherPopupMaintenance, setAfficherPopupMaintenance] = useState<boolean>(false);
+
+  // Afficher le popup de maintenance automatiquement en mode aléatoire
+  useEffect(() => {
+    if (modeSelectionne === 'aleatoire') {
+      setAfficherPopupMaintenance(true);
+    }
+  }, [modeSelectionne]);
 
   // Démarrer immédiatement quand un thème est sélectionné
   const gererSelectionTheme = (theme: string) => {
@@ -30,7 +38,7 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
     surConfigurationQuiz(config);
   };
 
-  // Pour le mode aléatoire, démarrer immédiatement
+  // Pour le mode aléatoire, démarrer le jeu
   const gererDemarrageAleatoire = () => {
     const config: ConfigurationQuiz = {
       mode: modeSelectionne,
@@ -87,6 +95,23 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
 
   const peutDemarrer = modeSelectionne === 'aleatoire' || (modeSelectionne === 'theme' && themeSelectionne);
 
+  // Fonctions pour gérer la maintenance
+  const fermerPopupMaintenance = () => {
+    setAfficherPopupMaintenance(false);
+  };
+
+  const estBoutonDesactive = (valeur: number | string) => {
+    if (modeSelectionne === 'aleatoire') {
+      // En mode aléatoire, seuls "mixte" et "20 questions" sont actifs
+      if (typeof valeur === 'number') {
+        return valeur !== 20; // Seules 20 questions sont actives
+      } else {
+        return valeur !== 'mixte'; // Seul le niveau "mixte" est actif
+      }
+    }
+    return false; // En mode thème, tous les boutons sont actifs
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-green-100 to-yellow-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-2 sm:p-4 flex flex-col items-center justify-center transition-all duration-500 overflow-x-hidden gsap-theme-entrance">
       <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
@@ -121,19 +146,25 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Nombre de questions</h2>
           <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
-            {optionsNombreQuestions.map((nombre) => (
-              <button
-                key={nombre}
-                onClick={() => setNombreQuestions(nombre)}
-                className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
-                  nombreQuestions === nombre
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {nombre} questions
-              </button>
-            ))}
+            {optionsNombreQuestions.map((nombre) => {
+              const estDesactive = estBoutonDesactive(nombre);
+              return (
+                <button
+                  key={nombre}
+                  onClick={() => !estDesactive && setNombreQuestions(nombre)}
+                  disabled={estDesactive}
+                  className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
+                    nombreQuestions === nombre
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : estDesactive
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-50'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                                 >
+                   {nombre} questions
+                 </button>
+              );
+            })}
           </div>
         </div>
 
@@ -141,19 +172,25 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 transition-colors duration-300">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Niveau de difficulté</h2>
           <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
-            {['facile', 'moyen', 'difficile', 'mixte'].map((niv) => (
-              <button
-                key={niv}
-                onClick={() => setNiveau(niv as any)}
-                className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
-                  niveau === niv
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {niv.charAt(0).toUpperCase() + niv.slice(1)}
-              </button>
-            ))}
+            {['facile', 'moyen', 'difficile', 'mixte'].map((niv) => {
+              const estDesactive = estBoutonDesactive(niv);
+              return (
+                <button
+                  key={niv}
+                  onClick={() => !estDesactive && setNiveau(niv as any)}
+                  disabled={estDesactive}
+                  className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
+                    niveau === niv
+                      ? 'bg-green-600 text-white shadow-lg'
+                      : estDesactive
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-50'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                                 >
+                   {niv.charAt(0).toUpperCase() + niv.slice(1)}
+                 </button>
+              );
+            })}
           </div>
         </div>
 
@@ -237,6 +274,48 @@ const SelectionThemeEtendue: React.FC<PropsSelectionThemeEtendue> = ({
             </div>
           </div>
         </div>
+
+        {/* Popup de maintenance */}
+        {afficherPopupMaintenance && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full transition-all duration-300">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                   Information - Services en Maintenance
+                 </h3>
+                                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    Certaines options du quiz aléatoire sont temporairement indisponibles :<br/>
+                    • 15 et 30 questions<br/>
+                    • Niveaux Facile, Moyen, Difficile<br/><br/>
+                    Seules les options "Mixte" et "20 questions" sont actuellement fonctionnelles. 
+                    Le jeu peut continuer normalement avec ces options.
+                  </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={fermerPopupMaintenance}
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
+                  >
+                    Compris
+                  </button>
+                  <button
+                    onClick={() => {
+                      fermerPopupMaintenance();
+                      surRetour();
+                    }}
+                    className="flex-1 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
+                  >
+                    Retour
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
