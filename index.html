@@ -9,8 +9,21 @@
   <link rel="icon" type="image/png" href="/icons/culture_10053855.png" />
   <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="apple-touch-icon" href="/icons/culture_10053855.png" />
+  <script>
+    // Détection précoce du mode offline pour iOS et autres navigateurs
+    window.__isOffline = !navigator.onLine;
+    window.addEventListener('online', () => {
+      window.__isOffline = false;
+      window.dispatchEvent(new Event('app-online'));
+    });
+    window.addEventListener('offline', () => {
+      window.__isOffline = true;
+      window.dispatchEvent(new Event('app-offline'));
+    });
+  </script>
 </head>
 
 <body>
