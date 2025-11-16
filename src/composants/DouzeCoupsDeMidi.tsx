@@ -69,7 +69,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
 
   if (tempsRestant <= 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 gsap-midi-entrance">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 gsap-midi-entrance">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-xl text-center transition-colors duration-300">
           <h1 className="text-4xl font-bold text-purple-700 dark:text-purple-400 mb-4">Fin du jeu !</h1>
           <div className="text-2xl mb-6 text-gray-800 dark:text-gray-200">Votre score : <span className="font-bold text-green-600 dark:text-green-400">{score}</span></div>
@@ -84,7 +84,7 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const question = questions[questionActuelle];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-200 to-pink-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 gsap-midi-entrance">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 gsap-midi-entrance">
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <button onClick={surRetour} className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white p-2 rounded-lg transition-colors duration-300">

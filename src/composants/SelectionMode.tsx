@@ -7,15 +7,14 @@ import {
   Target, 
   Clock, 
   ArrowLeft, 
-  User, 
   Shield, 
-  LogOut,
   Trophy,
   Users,
   MapPin,
   Calendar
 } from 'lucide-react';
 import { gsap } from 'gsap';
+import BasculeurTheme from './BasculeurTheme';
 
 interface SelectionModeProps {
   surSelectionMode: (mode: ModeJeu) => void;
@@ -37,46 +36,46 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
   const cardsRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  const modes: { id: ModeJeu; titre: string; description: string; icone: any; couleur: string; gradient: string }[] = [
+  const modes: { id: ModeJeu; titre: string; description: string; icone: any; bgColor: string; textColor: string }[] = [
     {
       id: 'theme',
       titre: 'Quiz par Thème',
       description: 'Choisissez un thème et testez vos connaissances',
       icone: BookOpen,
-      couleur: 'from-blue-500 to-blue-600',
-      gradient: 'from-blue-500/20 to-blue-600/20'
+      bgColor: 'bg-blue-900 dark:bg-blue-500',
+      textColor: 'text-blue-900 dark:text-blue-500'
     },
     {
       id: 'aleatoire',
       titre: 'Quiz Aléatoire',
       description: 'Questions mélangées de tous les thèmes',
       icone: Shuffle,
-      couleur: 'from-green-500 to-green-600',
-      gradient: 'from-green-500/20 to-green-600/20'
+      bgColor: 'bg-green-800 dark:bg-green-500',
+      textColor: 'text-green-800 dark:text-green-500'
     },
     {
       id: 'genieEnHerbe',
       titre: 'Génie en Herbe',
       description: 'Répondez le plus vite possible !',
       icone: Zap,
-      couleur: 'from-yellow-500 to-yellow-600',
-      gradient: 'from-yellow-500/20 to-yellow-600/20'
+      bgColor: 'bg-amber-600 dark:bg-orange-500',
+      textColor: 'text-amber-600 dark:text-orange-500'
     },
     {
       id: 'challenge100',
       titre: 'Challenge 100 Questions',
       description: 'Marathon de 100 questions consécutives',
       icone: Target,
-      couleur: 'from-purple-500 to-purple-600',
-      gradient: 'from-purple-500/20 to-purple-600/20'
+      bgColor: 'bg-blue-900 dark:bg-blue-500',
+      textColor: 'text-blue-900 dark:text-blue-500'
     },
     {
       id: 'douzeCoupsDeMidi',
       titre: 'Les 12 Coups de Midi',
       description: '12 questions chronométrées',
       icone: Clock,
-      couleur: 'from-red-500 to-red-600',
-      gradient: 'from-red-500/20 to-red-600/20'
+      bgColor: 'bg-green-800 dark:bg-green-500',
+      textColor: 'text-green-800 dark:text-green-500'
     }
   ];
 
@@ -132,48 +131,35 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900 p-4 overflow-hidden">
       <div className="max-w-6xl mx-auto" ref={containerRef}>
-        {/* Header avec animations */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl p-4 sm:p-8 mb-8 border border-white/20 dark:border-gray-700/50" ref={headerRef}>
+        {/* Header */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-8 mb-8 border border-gray-200 dark:border-gray-700" ref={headerRef}>
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
             <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-900 dark:text-blue-400">
                 🎮 Sélection du Mode de Jeu
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-lg">
-                Bienvenue <span className="font-semibold text-blue-600 dark:text-blue-400">{utilisateur.prenom || utilisateur.identifiant}</span> ! Choisissez votre mode de jeu
+                Bienvenue <span className="font-semibold text-blue-900 dark:text-blue-400">{utilisateur.prenom || utilisateur.identifiant}</span> ! Choisissez votre mode de jeu
               </p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-end">
-              <button
-                onClick={surProfil}
-                className="action-button bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
-              >
-                <User className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Profil</span>
-              </button>
+              <BasculeurTheme />
               {utilisateur.role === 'admin' && (
                 <button
                   onClick={surAdmin}
-                  className="action-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                  className="action-button btn btn-accent text-sm sm:text-base"
                 >
                   <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="hidden sm:inline">Admin</span>
                 </button>
               )}
-              <button
-                onClick={surDeconnexion}
-                className="action-button bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
-              >
-                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Déconnexion</span>
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Grille des modes avec animations */}
+        {/* Grille des modes */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8" ref={cardsRef}>
           {modes.map((mode) => {
             const IconComponent = mode.icone;
@@ -181,23 +167,20 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
               <div
                 key={mode.id}
                 data-mode={mode.id}
-                className={`group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl p-8 cursor-pointer transform transition-all duration-500 hover:scale-105 hover:shadow-2xl border border-white/20 dark:border-gray-700/50 relative overflow-hidden`}
+                className="card-hover"
                 onClick={() => handleCardClick(mode.id)}
               >
-                {/* Gradient overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${mode.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                
-                <div className="relative z-10 text-center">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${mode.couleur} text-white mb-6 transform group-hover:scale-110 transition-transform duration-300`}>
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${mode.bgColor} text-white mb-6`}>
                     <IconComponent className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all duration-300">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                     {mode.titre}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">
                     {mode.description}
                   </p>
-                  <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${mode.couleur} text-white px-6 py-3 rounded-xl font-semibold transform group-hover:scale-105 transition-all duration-300`}>
+                  <div className={`inline-flex items-center gap-2 ${mode.bgColor} text-white px-6 py-3 rounded-xl font-semibold`}>
                     <Trophy className="w-5 h-5" />
                     <span>Jouer</span>
                   </div>
@@ -207,37 +190,37 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
           })}
         </div>
 
-        {/* Statistiques rapides avec animations */}
+        {/* Statistiques rapides */}
         {utilisateur.prenom && (
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 dark:border-gray-700/50" ref={statsRef}>
+          <div className="card" ref={statsRef}>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-              <Trophy className="w-6 h-6 text-yellow-500" />
+              <Trophy className="w-6 h-6 text-amber-600 dark:text-orange-500" />
               Vos Informations
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-900 dark:bg-blue-500 text-white mb-3">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Pays</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{utilisateur.pays}</p>
               </div>
-              <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-green-800 dark:bg-green-500 text-white mb-3">
                   <Calendar className="w-6 h-6" />
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Âge</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{utilisateur.age} ans</p>
               </div>
-              <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-900 dark:bg-blue-500 text-white mb-3">
                   <Shield className="w-6 h-6" />
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Rôle</p>
                 <p className="font-semibold text-gray-900 dark:text-white capitalize">{utilisateur.role || 'user'}</p>
               </div>
-              <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-600 dark:bg-orange-500 text-white mb-3">
                   <Users className="w-6 h-6" />
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Email</p>

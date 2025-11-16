@@ -56,6 +56,44 @@ export const obtenirQuestionsRelaisAleatoires = (nombreQuestions: number): Quest
   }));
 };
 
+export const obtenirQuestionsVariesCultureGenerale = (nombreQuestions: number): QuestionGenieEnHerbe[] => {
+  // Obtenir des questions de tous les thèmes disponibles
+  const toutesLesQuestions: Question[] = [];
+  
+  // Collecter des questions de chaque thème avec les 3 niveaux de difficulté
+  themesDisponibles.forEach(theme => {
+    const questionsTheme = obtenirQuestionsParTheme(theme, 100); // Plus de questions pour plus de variété
+    toutesLesQuestions.push(...questionsTheme);
+  });
+  
+  // Séparer par difficulté
+  const faciles = toutesLesQuestions.filter((q: Question) => q.difficulte === 'facile');
+  const moyennes = toutesLesQuestions.filter((q: Question) => q.difficulte === 'moyen');
+  const difficiles = toutesLesQuestions.filter((q: Question) => q.difficulte === 'difficile');
+  
+  // Créer un mélange équilibré de difficultés
+  const questionsVariees: Question[] = [];
+  const parDifficulte = Math.ceil(nombreQuestions / 3);
+  
+  // Mélanger chaque difficulté
+  const facilesMelangees = faciles.sort(() => Math.random() - 0.5).slice(0, parDifficulte);
+  const moyennesMelangees = moyennes.sort(() => Math.random() - 0.5).slice(0, parDifficulte);
+  const difficilesMelangees = difficiles.sort(() => Math.random() - 0.5).slice(0, parDifficulte);
+  
+  questionsVariees.push(...facilesMelangees, ...moyennesMelangees, ...difficilesMelangees);
+  
+  // Mélanger le résultat final
+  const questionsMelangees = questionsVariees.sort(() => Math.random() - 0.5);
+  
+  // Limiter et convertir en QuestionGenieEnHerbe
+  return questionsMelangees.slice(0, nombreQuestions).map((question: Question) => ({
+    ...question,
+    rubrique: 'eclair' as const,
+    tempsLimite: 15,
+    points: 5
+  }));
+};
+
 // Données pour l'identification : pays, nationalités, capitales et monnaies
 const donneesIdentification = [
   {

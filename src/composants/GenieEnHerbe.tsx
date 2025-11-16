@@ -3,7 +3,7 @@ import { Zap, Clock, Trophy, Target, ArrowLeft, Play, Star, BookOpen, Calculator
 import BasculeurTheme from './BasculeurTheme';
 import { QuestionGenieEnHerbe, ScoreGenieEnHerbe } from '../types';
 import { themesDisponibles } from '../donnees/questionsEtendues';
-import { filtrerQuestionsDifficiles, obtenirQuestionsIdentification } from '../utilitaires/questionsUtilitaires';
+import { filtrerQuestionsDifficiles, obtenirQuestionsIdentification, obtenirQuestionsVariesCultureGenerale } from '../utilitaires/questionsUtilitaires';
 
 // Fonction pour mélanger les réponses
 const melangerReponses = (question: QuestionGenieEnHerbe) => {
@@ -96,9 +96,15 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
       } else if (rubrique.nom === 'relais' && themeRelaisSelectionne) {
         // Pour le relais avec thème
         nouvellesQuestions = filtrerQuestionsDifficiles(themeRelaisSelectionne, rubrique.questionsParRubrique);
+      } else if (rubrique.nom === 'relais' && !themeRelaisSelectionne) {
+        // Pour le relais sans thème (questions aléatoires de culture générale)
+        nouvellesQuestions = obtenirQuestionsVariesCultureGenerale(rubrique.questionsParRubrique);
+      } else if (rubrique.nom === 'canonnade') {
+        // Pour la canonnade, utiliser des questions de culture générale variées
+        nouvellesQuestions = obtenirQuestionsVariesCultureGenerale(rubrique.questionsParRubrique);
       } else {
-        // Pour les autres rubriques (canonnade, éclair, etc.)
-        nouvellesQuestions = filtrerQuestionsDifficiles('Mathématiques', rubrique.questionsParRubrique);
+        // Pour les autres rubriques (éclair, etc.)
+        nouvellesQuestions = obtenirQuestionsVariesCultureGenerale(rubrique.questionsParRubrique);
       }
       // Correction du temps limite pour chaque question selon la rubrique
       nouvellesQuestions = nouvellesQuestions.map(q => ({
@@ -401,7 +407,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
 
   const obtenirCouleurReponse = (index: number) => {
     if (!afficherReponse) {
-      return reponseSelectionnee === index ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50';
+      return reponseSelectionnee === index ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100';
     }
 
     const question = questionsMelangees[questionActuelle];
@@ -410,7 +416,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     } else if (reponseSelectionnee === index) {
       return 'bg-red-500 text-white';
     } else {
-      return 'bg-gray-100 text-gray-500';
+      return 'bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-300';
     }
   };
 
@@ -431,7 +437,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubrique = rubriques[rubriqueActuelle];
     const isCulture = rubrique.nom === 'culture';
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-${isCulture ? 'green-50 to-green-100' : 'blue-50 to-cyan-100'} dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500`}>
+      <div className={`min-h-screen bg-gradient-to-br ${isCulture ? 'from-green-50 to-green-50' : 'from-blue-50 to-cyan-50'} dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500`}>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-2xl text-center transition-colors duration-300 mx-2">
           <div className="absolute top-4 right-4">
             <BasculeurTheme />
@@ -468,7 +474,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   if (rubriques[rubriqueActuelle].nom === 'identification' && phaseJeu === 'jeu') {
     if (questionsMelangees.length === 0) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Chargement de l'identification...</p>
@@ -484,7 +490,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const pointsRestants = [40, 30, 20, 10][indiceActuel];
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col">
         <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 transition-colors duration-300">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
@@ -530,7 +536,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
                   onClick={() => gererReponseIdentification(index)}
                   disabled={aRepondu}
                   className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all text-left flex items-center justify-between ${obtenirCouleurReponse(index)} ${
-                    aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 hover:border-purple-300'
+                    aRepondu ? 'cursor-not-allowed' : 'cursor-pointer border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500'
                   }`}
                 >
                   <span className="text-sm sm:text-base lg:text-lg">{reponse}</span>
@@ -583,7 +589,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubrique = rubriques[rubriqueActuelle];
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-2xl text-center transition-colors duration-300 mx-2">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
             <button
@@ -648,7 +654,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   // Écran de jeu
   if (questionsMelangees.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 flex items-center justify-center transition-all duration-500">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">Chargement des questions...</p>
@@ -676,7 +682,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 transition-all duration-500 flex flex-col overflow-x-hidden">
       <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col px-2 sm:px-4">
         {/* En-tête */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 transition-colors duration-300">

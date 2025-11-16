@@ -39,7 +39,7 @@
   body {
     background-color: var(--bg);
     color: var(--text);
-    transition: color 300ms, background-color 300ms;
+    @apply transition-colors duration-300;
   }
 
   ::selection {
@@ -55,6 +55,7 @@
   button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    @apply transition-all duration-200;
   }
 
   input, select, textarea {
@@ -205,5 +206,3 @@
     @apply transition-all duration-300 ease-out;
   }
 }
-
-
