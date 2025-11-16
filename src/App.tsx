@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FournisseurTheme } from './contextes/ThemeContexte';
 import { EtatJeu, Question, UtilisateurConnecte, ModeJeu, ConfigurationQuiz, ScoreGenieEnHerbe } from './types';
-import { obtenirQuestionsParTheme, obtenirQuestionsAleatoires, obtenirChallenge100Questions } from './donnees/questionsEtendues';
+import { obtenirQuestionsParTheme, obtenirChallenge100Questions } from './donnees/questionsEtendues';
 import { obtenirQuestionsPersonnalisees } from './utilitaires/questionsAdaptees';
 import { obtenirUtilisateurOffline, sauvegarderUtilisateurOffline } from './utilitaires/modeOffline';
 import Connexion from './composants/Connexion';
@@ -122,21 +122,6 @@ function App() {
         questions = obtenirQuestionsParTheme(config.theme, config.nombreQuestions);
       }
       setThemeActuel(config.theme);
-    } else if (config.mode === 'aleatoire') {
-      if (config.niveau && config.niveau !== 'mixte') {
-        // Sélectionne toutes les questions du niveau demandé
-        const toutes: Question[] = [];
-        // Import dynamique pour éviter les erreurs TypeScript
-        import('./donnees/questionsEtendues').then(module => {
-          Object.values(module.questionsParTheme).forEach((qs: any) => {
-            toutes.push(...qs.filter((q: any) => q.difficulte === config.niveau));
-          });
-        });
-        questions = toutes.sort(() => Math.random() - 0.5).slice(0, config.nombreQuestions);
-      } else {
-        questions = obtenirQuestionsAleatoires(config.nombreQuestions);
-      }
-      setThemeActuel('Quiz Aléatoire');
     }
 
     // Adapter les questions selon le profil utilisateur si disponible
@@ -171,10 +156,6 @@ function App() {
       setEtatJeu('genieEnHerbe');
     } else if (modeJeuActuel === 'challenge100') {
       const questions = obtenirChallenge100Questions();
-      setQuestionsActuelles(questions);
-      setEtatJeu('quiz');
-    } else if (modeJeuActuel === 'aleatoire') {
-      const questions = obtenirQuestionsAleatoires(questionsActuelles.length);
       setQuestionsActuelles(questions);
       setEtatJeu('quiz');
     } else if (modeJeuActuel === 'theme') {

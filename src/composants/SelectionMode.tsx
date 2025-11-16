@@ -46,14 +46,6 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
       textColor: 'text-blue-900 dark:text-blue-500'
     },
     {
-      id: 'aleatoire',
-      titre: 'Quiz Aléatoire',
-      description: 'Questions mélangées de tous les thèmes',
-      icone: Shuffle,
-      bgColor: 'bg-green-800 dark:bg-green-500',
-      textColor: 'text-green-800 dark:text-green-500'
-    },
-    {
       id: 'genieEnHerbe',
       titre: 'Génie en Herbe',
       description: 'Répondez le plus vite possible !',
@@ -191,7 +183,7 @@ const SelectionMode: React.FC<SelectionModeProps> = ({
         </div>
 
         {/* Statistiques rapides */}
-        {utilisateur.prenom && (
+        {false && (
           <div className="card" ref={statsRef}>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
               <Trophy className="w-6 h-6 text-amber-600 dark:text-orange-500" />

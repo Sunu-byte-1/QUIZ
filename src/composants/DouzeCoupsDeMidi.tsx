@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, SkipForward, Clock, Star, ArrowLeft } from 'lucide-react';
+import { SkipForward, Clock, Star, ArrowLeft } from 'lucide-react';
 import BasculeurTheme from './BasculeurTheme';
 import { obtenirQuestionsAleatoires } from '../donnees/questionsEtendues';
 
@@ -7,9 +7,29 @@ interface PropsDouzeCoupsDeMidi {
   surRetour: () => void;
 }
 
-const DUREE_JEU = 500; // 5 minutes en secondes
-const DUREE_PASSAGE = 500; // 2 minutes max pour "passer" (optionnel, voir logique)
+const DUREE_JEU = 300; // 5 minutes en secondes
 const NB_QUESTIONS = 100; // On pioche dans un grand nombre
+
+// Fonction pour mélanger les réponses d'une question
+const melangerReponses = (question: any) => {
+  const reponses = [...question.reponses];
+  const bonneReponseTexte = reponses[question.bonneReponse];
+  
+  // Mélanger le tableau des réponses
+  for (let i = reponses.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [reponses[i], reponses[j]] = [reponses[j], reponses[i]];
+  }
+  
+  // Trouver le nouvel index de la bonne réponse
+  const nouvelIndexBonneReponse = reponses.findIndex(reponse => reponse === bonneReponseTexte);
+  
+  return {
+    ...question,
+    reponses,
+    bonneReponse: nouvelIndexBonneReponse
+  };
+};
 
 const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const [questions, setQuestions] = useState<any[]>([]);
@@ -18,11 +38,13 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
   const [tempsRestant, setTempsRestant] = useState<number>(DUREE_JEU);
   const [aRepondu, setARepondu] = useState(false);
   const [reponseSelectionnee, setReponseSelectionnee] = useState<number | null>(null);
-  const [afficherReponse, setAfficherReponse] = useState(false);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    setQuestions(obtenirQuestionsAleatoires(NB_QUESTIONS));
+    const questionsChargees = obtenirQuestionsAleatoires(NB_QUESTIONS);
+    // Mélanger les réponses de chaque question
+    const questionsMelangees = questionsChargees.map(q => melangerReponses(q));
+    setQuestions(questionsMelangees);
   }, []);
 
   useEffect(() => {
@@ -43,7 +65,6 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
     if (aRepondu || tempsRestant <= 0) return;
     setReponseSelectionnee(index);
     setARepondu(true);
-    setAfficherReponse(true);
     const question = questions[questionActuelle];
     if (index === question.bonneReponse) {
       setScore((s) => s + 10);
@@ -55,7 +76,6 @@ const DouzeCoupsDeMidi: React.FC<PropsDouzeCoupsDeMidi> = ({ surRetour }) => {
 
   const passerQuestion = () => {
     setARepondu(false);
-    setAfficherReponse(false);
     setReponseSelectionnee(null);
     if (questionActuelle < questions.length - 1) {
       setQuestionActuelle((q) => q + 1);

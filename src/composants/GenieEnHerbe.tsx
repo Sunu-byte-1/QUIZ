@@ -41,7 +41,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const [tempsRestant, setTempsRestant] = useState<number>(0);
   const [timerActif, setTimerActif] = useState(false);
   type ScoreGenieEnHerbeEtendue = {
-    canonnade: number;
+    cantonnade: number;
     eclair: number;
     culture: number;
     relais: number;
@@ -49,7 +49,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     total: number;
   };
   const [score, setScore] = useState<ScoreGenieEnHerbeEtendue>({
-    canonnade: 0,
+    cantonnade: 0,
     eclair: 0,
     culture: 0,
     relais: 0,
@@ -65,7 +65,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const [questionsIdentificationActuelles, setQuestionsIdentificationActuelles] = useState<QuestionGenieEnHerbe[]>([]);
 
   const rubriques = [
-    { nom: 'canonnade', titre: 'Canonnade', description: '1 question difficile + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5, pointsParQuestion: 10, tempsParQuestion: 30 },
+    { nom: 'cantonnade', titre: 'Cantonnade', description: '1 question difficile + 4 bonus si réussie', couleur: 'bg-red-500', questionsParRubrique: 5, pointsParQuestion: 10, tempsParQuestion: 30 },
     { nom: 'eclair', titre: 'Éclair', description: '10 questions rapides aléatoires', couleur: 'bg-yellow-500', questionsParRubrique: 10, pointsParQuestion: 5, tempsParQuestion: 5 },
     { nom: 'culture', titre: 'Culture Générale', description: 'Choisissez un thème de culture générale', couleur: 'bg-green-600', questionsParRubrique: 10, pointsParQuestion: 10, tempsParQuestion: 15 },
     { nom: 'relais', titre: 'Relais', description: 'Questions en séquence - arrêt à la première erreur', couleur: 'bg-blue-500', questionsParRubrique: 10, pointsParQuestion: 10, tempsParQuestion: 15 },
@@ -99,8 +99,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
       } else if (rubrique.nom === 'relais' && !themeRelaisSelectionne) {
         // Pour le relais sans thème (questions aléatoires de culture générale)
         nouvellesQuestions = obtenirQuestionsVariesCultureGenerale(rubrique.questionsParRubrique);
-      } else if (rubrique.nom === 'canonnade') {
-        // Pour la canonnade, utiliser des questions de culture générale variées
+      } else if (rubrique.nom === 'cantonnade') {
+        // Pour la cantonnade, utiliser des questions de culture générale variées
         nouvellesQuestions = obtenirQuestionsVariesCultureGenerale(rubrique.questionsParRubrique);
       } else {
         // Pour les autres rubriques (éclair, etc.)
@@ -152,7 +152,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
             setTimeout(() => {
               passerRubriqueSuivante();
             }, 2000);
-          } else if (rubriqueNom === 'canonnade') {
+          } else if (rubriqueNom === 'cantonnade') {
             setTimeout(() => {
               passerRubriqueSuivante();
             }, 2000);
@@ -222,7 +222,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
     const rubriqueNom = rubriques[rubriqueActuelle].nom as keyof ScoreGenieEnHerbe;
     const reponseCorrecte = index === question.bonneReponse;
 
-    if (rubriqueNom === 'canonnade') {
+    if (rubriqueNom === 'cantonnade') {
       if (questionCantonnade === 0) {
         if (reponseCorrecte) {
           // Bonne réponse à la question principale : activer les bonus
@@ -242,7 +242,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
             setAfficherReponse(false);
           }, 2000);
         } else {
-          // Mauvaise réponse à la principale : fin de la canonnade
+          // Mauvaise réponse à la principale : fin de la cantonnade
           setTimeout(() => {
             passerRubriqueSuivante();
           }, 2000);
@@ -327,8 +327,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   const questionSuivante = () => {
     const rubrique = rubriques[rubriqueActuelle];
     
-    // Logique spéciale pour la canonnade
-    if (rubrique.nom === 'canonnade') {
+    // Logique spéciale pour la cantonnade
+    if (rubrique.nom === 'cantonnade') {
       if (questionCantonnade === 0 && cantonnadeReussie) {
         // Passer aux questions bonus
         setQuestionCantonnade(1);
@@ -346,7 +346,7 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
         setAfficherReponse(false);
         return;
       } else {
-        // Canonnade terminée
+        // Cantonnade terminée
         passerRubriqueSuivante();
         return;
       }
@@ -397,12 +397,26 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
         identification: prevScore.identification + points,
         total: prevScore.total + points
       }));
+      
+      // Terminer l'identification après 3 secondes
+      setTimeout(() => {
+        passerRubriqueSuivante();
+      }, 3000);
+    } else {
+      // Mauvaise réponse : passer à l'indice suivant ou terminer
+      if (indiceActuel < 3) {
+        // Passer à l'indice suivant
+        setIndiceActuel(indiceActuel + 1);
+        setReponseSelectionnee(null);
+        setARepondu(false);
+        setAfficherReponse(false);
+      } else {
+        // Dernier indice échoué : fin de l'identification
+        setTimeout(() => {
+          passerRubriqueSuivante();
+        }, 3000);
+      }
     }
-
-    // Terminer l'identification après 3 secondes
-    setTimeout(() => {
-      passerRubriqueSuivante();
-    }, 3000);
   };
 
   const obtenirCouleurReponse = (index: number) => {
@@ -619,8 +633,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4">Règles de cette rubrique :</h3>
             <div className="space-y-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
               <div>• {rubrique.questionsParRubrique} questions à répondre</div>
-              <div>• {rubrique.nom === 'canonnade' ? 30 : rubrique.nom === 'eclair' ? 5 : rubrique.nom === 'relais' ? 15 : 30} secondes par question</div>
-              <div>• {questionsMelangees.length > 0 ? questionsMelangees[0].points : rubrique.nom === 'canonnade' ? 1 : rubrique.nom === 'eclair' ? 2 : rubrique.nom === 'relais' ? 3 : 4} point(s) par bonne réponse</div>
+              <div>• {rubrique.nom === 'cantonnade' ? 30 : rubrique.nom === 'eclair' ? 5 : rubrique.nom === 'relais' ? 15 : 30} secondes par question</div>
+              <div>• {questionsMelangees.length > 0 ? questionsMelangees[0].points : rubrique.nom === 'cantonnade' ? 1 : rubrique.nom === 'eclair' ? 2 : rubrique.nom === 'relais' ? 3 : 4} point(s) par bonne réponse</div>
               <div>• Réponse automatique si temps écoulé</div>
             </div>
           </div>
@@ -671,11 +685,11 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   let titrePhase = rubrique.titre;
   if (rubrique.nom === 'relais' && themeRelaisSelectionne) {
     titrePhase = `Relais - ${themeRelaisSelectionne}`;
-  } else if (rubrique.nom === 'canonnade') {
-    if (questionCantonnade === 0) {
-      titrePhase = 'Canonnade - Question Principale';
+  } else if (rubrique.nom === 'cantonnade') {
+    if (indexQuestionCantonnade === 0) {
+      titrePhase = 'Cantonnade - Question Principale';
     } else {
-      titrePhase = `Canonnade - Bonus ${questionCantonnade}/4`;
+      titrePhase = `Cantonnade - Bonus ${questionCantonnade}/4`;
     }
   } else if (rubrique.nom === 'relais' && !relaisActif) {
     titrePhase = 'Relais - Terminé';
@@ -729,8 +743,8 @@ const GenieEnHerbe: React.FC<PropsGenieEnHerbe> = ({ surFinJeu, surRetourAccueil
   {/* Scores par rubrique */}
   <div className="grid grid-cols-5 gap-1 sm:gap-2 lg:gap-4 mt-2 sm:mt-4">
     <div className="p-1 sm:p-2 text-center">
-      <div className="text-sm sm:text-base lg:text-lg font-bold text-red-600">{score.canonnade}</div>
-      <div className="text-xs text-gray-500 dark:text-gray-400">Canonnade</div>
+      <div className="text-sm sm:text-base lg:text-lg font-bold text-red-600">{score.cantonnade}</div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">Cantonnade</div>
     </div>
     <div className="p-1 sm:p-2 text-center">
       <div className="text-sm sm:text-base lg:text-lg font-bold text-yellow-600">{score.eclair}</div>

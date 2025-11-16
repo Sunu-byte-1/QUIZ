@@ -3,9 +3,10 @@
   "short_name": "QUIZ",
   "start_url": ".",
   "scope": ".",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icons/culture_10053855.png",
