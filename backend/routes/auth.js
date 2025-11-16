@@ -7,6 +7,7 @@ const { auth, adminAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // Créer un admin par défaut au démarrage
+//creation dossier
 const creerAdminParDefaut = async () => {
   try {
     const adminExistant = await User.findOne({ email: 'abdallahdiouf.dev@gmail.com' });
