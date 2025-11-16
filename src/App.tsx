@@ -3,6 +3,7 @@ import { FournisseurTheme } from './contextes/ThemeContexte';
 import { EtatJeu, Question, UtilisateurConnecte, ModeJeu, ConfigurationQuiz, ScoreGenieEnHerbe } from './types';
 import { obtenirQuestionsParTheme, obtenirQuestionsAleatoires, obtenirChallenge100Questions } from './donnees/questionsEtendues';
 import { obtenirQuestionsPersonnalisees } from './utilitaires/questionsAdaptees';
+import { obtenirUtilisateurOffline, sauvegarderUtilisateurOffline } from './utilitaires/modeOffline';
 import Connexion from './composants/Connexion';
 import SelectionMode from './composants/SelectionMode';
 import SelectionThemeEtendue from './composants/SelectionThemeEtendue';
@@ -13,6 +14,7 @@ import DouzeCoupsDeMidi from './composants/DouzeCoupsDeMidi';
 import ProfilUtilisateur from './composants/ProfilUtilisateur';
 import AdminDashboard from './composants/AdminDashboard';
 import LoadingScreen from './composants/LoadingScreen';
+import IndicateurOffline from './composants/IndicateurOffline';
 import { apiService } from './services/api';
 
 function App() {
@@ -29,22 +31,13 @@ function App() {
   React.useEffect(() => {
     const verifierAuth = async () => {
       try {
-        if (apiService.isAuthenticated()) {
-          const userData = await apiService.checkAuth();
-          setUtilisateur({
-            identifiant: userData.email,
-            connecte: true,
-            prenom: userData.prenom,
-            nom: userData.nom,
-            pays: userData.pays,
-            age: userData.age,
-            role: userData.role
-          });
-          setEtatJeu('selectionMode');
-        }
+        // Mode offline : bypasser le login et se connecter directement
+        const utilisateurOffline = obtenirUtilisateurOffline();
+        setUtilisateur(utilisateurOffline);
+        setEtatJeu('selectionMode');
+        sauvegarderUtilisateurOffline(utilisateurOffline);
       } catch (error) {
-        // Token invalide, déconnexion
-        apiService.clearToken();
+        console.error('Erreur au démarrage:', error);
       } finally {
         setChargementInitial(false);
       }
@@ -309,6 +302,7 @@ function App() {
   return (
     <FournisseurTheme>
       <div className="App min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <IndicateurOffline />
         {renduComposant()}
       </div>
     </FournisseurTheme>
