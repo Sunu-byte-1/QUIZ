@@ -21,9 +21,9 @@ const creerAdminParDefaut = async () => {
         age: 25,
         role: 'admin'
       });
-      console.log('✅ Admin par défaut créé: abdallahdiouf.dev@gmail.com / Khoudia1970admin');
+      console.log(' Admin par défaut créé: abdallahdiouf.dev@gmail.com / Khoudia1970admin');
     } else {
-      console.log('✅ Admin existe déjà dans la base de données');
+      console.log(' Admin existe déjà dans la base de données');
     }
   } catch (error) {
     console.error('❌ Erreur création admin:', error);
@@ -36,13 +36,13 @@ creerAdminParDefaut();
 // Inscription
 router.post('/register', async (req, res) => {
   try {
-    console.log('📝 Tentative d\'inscription:', { email: req.body.email, prenom: req.body.prenom });
+    console.log(' Tentative d\'inscription:', { email: req.body.email, prenom: req.body.prenom });
     
     const { email, password, prenom, nom, pays, age } = req.body;
 
     // Validation stricte
     if (!email || !password || !prenom || !nom || !pays || !age) {
-      console.log('❌ Validation échouée - champs manquants');
+      console.log(' Validation échouée - champs manquants');
       return res.status(400).json({ message: 'Tous les champs sont requis' });
     }
 

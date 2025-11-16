@@ -30,7 +30,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         scale: 1, 
         rotation: 360, 
         duration: 1, 
-        ease: "back.out(1.7)",
         repeat: -1,
         ease: "none"
       },
